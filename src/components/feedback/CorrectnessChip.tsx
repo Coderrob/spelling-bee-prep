@@ -1,16 +1,27 @@
 import { Chip } from '@mui/material';
-import type { Difficulty } from '@/types';
+import { Difficulty } from '@/types';
 
 interface CorrectnessChipProps {
   difficulty: Difficulty;
 }
 
-export function CorrectnessChip({ difficulty }: CorrectnessChipProps) {
-  const colorMap = {
-    easy: 'success',
-    medium: 'warning',
-    hard: 'error',
-  } as const;
+enum DifficultyColor {
+  EASY = 'success',
+  MEDIUM = 'warning',
+  HARD = 'error',
+}
 
-  return <Chip label={difficulty.toUpperCase()} color={colorMap[difficulty]} />;
+function getDifficultyColor(difficulty: Difficulty): 'success' | 'warning' | 'error' {
+  switch (difficulty) {
+    case Difficulty.EASY:
+      return DifficultyColor.EASY as 'success';
+    case Difficulty.MEDIUM:
+      return DifficultyColor.MEDIUM as 'warning';
+    case Difficulty.HARD:
+      return DifficultyColor.HARD as 'error';
+  }
+}
+
+export function CorrectnessChip({ difficulty }: CorrectnessChipProps) {
+  return <Chip label={difficulty.toUpperCase()} color={getDifficultyColor(difficulty)} />;
 }

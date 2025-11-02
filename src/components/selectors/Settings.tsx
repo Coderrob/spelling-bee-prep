@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,16 +12,25 @@ import {
   Button,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useSettingsStore } from '@/store/settingsStore';
+import { MIN_SPEECH_RATE, MAX_SPEECH_RATE, MIN_VOLUME, MAX_VOLUME } from '@/types/constants';
 
 interface SettingsProps {
   open: boolean;
   onClose: () => void;
 }
 
-export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
+export function Settings({ open, onClose }: SettingsProps) {
   const { t, i18n } = useTranslation();
-  const [speechRate, setSpeechRate] = useState(1);
-  const [volume, setVolume] = useState(1);
+  const { speechRate, speechVolume, setSpeechRate, setSpeechVolume } = useSettingsStore();
+
+  const handleRateChange = (_: Event, value: number | number[]) => {
+    setSpeechRate(value as number);
+  };
+
+  const handleVolumeChange = (_: Event, value: number | number[]) => {
+    setSpeechVolume(value as number);
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -44,9 +52,9 @@ export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
             <Typography gutterBottom>{t('settings.speechRate')}</Typography>
             <Slider
               value={speechRate}
-              onChange={(_, value) => setSpeechRate(value as number)}
-              min={0.5}
-              max={2}
+              onChange={handleRateChange}
+              min={MIN_SPEECH_RATE}
+              max={MAX_SPEECH_RATE}
               step={0.1}
               marks
               valueLabelDisplay="auto"
@@ -56,10 +64,10 @@ export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
           <Box>
             <Typography gutterBottom>{t('settings.volume')}</Typography>
             <Slider
-              value={volume}
-              onChange={(_, value) => setVolume(value as number)}
-              min={0}
-              max={1}
+              value={speechVolume}
+              onChange={handleVolumeChange}
+              min={MIN_VOLUME}
+              max={MAX_VOLUME}
               step={0.1}
               marks
               valueLabelDisplay="auto"
@@ -73,4 +81,4 @@ export const Settings: React.FC<SettingsProps> = ({ open, onClose }) => {
       </DialogContent>
     </Dialog>
   );
-};
+}

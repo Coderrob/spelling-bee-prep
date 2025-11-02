@@ -1,9 +1,10 @@
 import { createTheme } from '@mui/material/styles';
+import { THEME_COLOR } from '@/types/constants';
 
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: THEME_COLOR,
     },
     secondary: {
       main: '#dc004e',

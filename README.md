@@ -1,73 +1,183 @@
-# React + TypeScript + Vite
+# 🐝 Spelling Bee Prep
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, interactive spelling practice application built with React 18, TypeScript, and Material UI. Practice spelling with text-to-speech pronunciation, multiple difficulty levels, and helpful hints.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🎯 Practice Modes
+- **Random Practice**: Practice words in random order
+- **Difficulty-Based**: Focus on easy, medium, or hard words
+- **Challenges**: Take on spelling challenges
 
-## React Compiler
+### 🔊 Text-to-Speech
+- Web Speech API for natural word pronunciation
+- Automatic fallback for unsupported browsers
+- Adjustable speech rate and volume
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 💡 Learning Aids
+- Word definitions
+- Usage examples
+- Word origins
+- Difficulty indicators
 
-## Expanding the ESLint configuration
+### 📊 Progress Tracking
+- Real-time statistics
+- Current streak counter
+- Correct/incorrect tracking
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🌐 Internationalization
+- i18next integration
+- Multi-language support ready
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 📱 Progressive Web App
+- Offline support
+- Installable on mobile devices
+- Service worker caching
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### 🔒 Security
+- OWASP security best practices
+- Content Security Policy
+- HTTP security headers
+- Input validation with Zod
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Tech Stack
+
+- **Frontend**: React 18, TypeScript
+- **Build Tool**: Vite
+- **UI Framework**: Material UI (MUI)
+- **Styling**: Emotion
+- **State Management**: Zustand
+- **Form Validation**: React Hook Form + Zod
+- **Testing**: Vitest, React Testing Library, Playwright
+- **i18n**: react-i18next
+- **PWA**: vite-plugin-pwa
+- **Linting/Formatting**: ESLint, Prettier
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18+ and npm
+
+### Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development Scripts
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Run unit tests
+npm test
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run E2E tests
+npm run test:e2e
+
+# Run E2E tests with UI
+npm run test:e2e:ui
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
+
+# Check formatting
+npm run format:check
 ```
+
+## Project Structure
+
+```
+spelling-bee-prep/
+├── src/
+│   ├── app/                    # App configuration
+│   │   ├── i18n.ts            # Internationalization setup
+│   │   └── theme.ts           # Material UI theme
+│   ├── components/            # Reusable components
+│   │   └── Settings.tsx       # Settings dialog
+│   ├── features/              # Feature modules
+│   │   └── practice/          # Practice feature
+│   │       ├── ModeSelector.tsx
+│   │       ├── PracticeMode.tsx
+│   │       └── store.ts       # Zustand store
+│   ├── domain/                # Domain logic
+│   │   └── services/
+│   │       └── tts/           # Text-to-speech service
+│   │           ├── web-speech-service.ts
+│   │           ├── fallback-service.ts
+│   │           ├── types.ts
+│   │           └── index.ts
+│   ├── data/                  # Data layer
+│   │   └── dictionaries/      # Word dictionaries
+│   │       ├── schema.ts      # Zod schemas
+│   │       └── default-words.ts
+│   ├── App.tsx               # Main app component
+│   └── main.tsx              # App entry point
+├── tests/
+│   ├── unit/                 # Unit tests
+│   ├── e2e/                  # E2E tests
+│   └── setup.ts              # Test setup
+├── public/                   # Static assets
+└── ...config files
+
+```
+
+## Word Dictionary Format
+
+Words are validated using Zod schemas:
+
+```typescript
+{
+  word: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  definition: string;
+  usageExample?: string;
+  origin?: string;
+  phonetic?: string;
+  category?: string;
+}
+```
+
+## Browser Support
+
+- Modern browsers with ES2022 support
+- Web Speech API for TTS (with fallback)
+- Progressive Web App features
+
+## Security
+
+See [SECURITY.md](./SECURITY.md) for details on:
+- OWASP security measures
+- Content Security Policy
+- HTTP security headers
+- Input validation
+- Dependency management
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and linting
+5. Submit a pull request
+
+## License
+
+MIT

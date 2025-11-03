@@ -19,10 +19,10 @@ test.describe('Spelling Bee Practice', () => {
   test('should start practice in random mode', async ({ page }) => {
     // Select random mode
     await page.getByText('Random').click();
-    
+
     // Start practice
     await page.getByRole('button', { name: /start practice/i }).click();
-    
+
     // Should see the practice interface
     await expect(page.getByText('Listen to the word')).toBeVisible();
     await expect(page.getByRole('textbox', { name: /type the word/i })).toBeVisible();
@@ -32,31 +32,29 @@ test.describe('Spelling Bee Practice', () => {
     // Start practice
     await page.getByText('Random').click();
     await page.getByRole('button', { name: /start practice/i }).click();
-    
+
     // Type an answer
     const input = page.getByRole('textbox', { name: /type the word/i });
     await input.fill('test');
-    
+
     // Submit should be enabled
     const submitButton = page.getByRole('button', { name: /submit/i });
     await expect(submitButton).toBeEnabled();
-    
+
     await submitButton.click();
-    
+
     // Should show result (either correct or incorrect)
-    await expect(
-      page.getByText(/correct|incorrect/i).first()
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText(/correct|incorrect/i).first()).toBeVisible({ timeout: 5000 });
   });
 
   test('should show hint when requested', async ({ page }) => {
     // Start practice
     await page.getByText('Random').click();
     await page.getByRole('button', { name: /start practice/i }).click();
-    
+
     // Click hint button
     await page.getByRole('button', { name: /hint/i }).click();
-    
+
     // Should show hint with definition
     await expect(page.getByText(/definition/i)).toBeVisible();
   });

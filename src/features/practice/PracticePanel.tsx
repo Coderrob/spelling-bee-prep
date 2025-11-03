@@ -111,7 +111,11 @@ export function PracticePanel(): ReactElement {
               {isCorrect === null ? (
                 <AnswerButtons onHint={toggleHint} isSubmitDisabled={!isInputValid()} />
               ) : (
-                <FeedbackDisplay isCorrect={isCorrect} currentWord={currentWord} onNext={nextWord} />
+                <FeedbackDisplay
+                  isCorrect={isCorrect}
+                  currentWord={currentWord}
+                  onNext={nextWord}
+                />
               )}
             </Stack>
           </form>

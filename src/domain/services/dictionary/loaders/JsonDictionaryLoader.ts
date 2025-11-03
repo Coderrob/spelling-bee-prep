@@ -1,24 +1,5 @@
-import { z } from 'zod';
 import type { IDictionaryLoader, WordSet, GradeBand, LocaleCode } from '@/types';
-import { Difficulty, LocaleCode as LocaleCodeEnum } from '@/types';
-
-const WordEntrySchema = z.object({
-  word: z.string().min(1),
-  difficulty: z.enum([Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD]),
-  definition: z.string(),
-  usageExample: z.string().optional(),
-  origin: z.string().optional(),
-  phonetic: z.string().optional(),
-  category: z.string().optional(),
-});
-
-const WordSetSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  words: z.array(WordEntrySchema),
-  version: z.string(),
-  language: z.enum([LocaleCodeEnum.EN_US, LocaleCodeEnum.ES_ES, LocaleCodeEnum.FR_FR]),
-});
+import { WordSetSchema } from '@/types/schemas';
 
 /**
  * JSON-based dictionary loader with schema validation

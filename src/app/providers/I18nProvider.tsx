@@ -1,6 +1,6 @@
+import type { ReactNode, ReactElement } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '@/i18n/config';
-import type { ReactNode, ReactElement } from 'react';
 
 /** Props for the I18nProvider component. */
 interface I18nProviderProps {

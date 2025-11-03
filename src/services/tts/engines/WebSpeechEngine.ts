@@ -1,12 +1,23 @@
-import { LocaleCode, type ITtsEngine, type TtsOptions } from '@/types';
-import {
-  DEFAULT_SPEECH_PITCH,
-  DEFAULT_SPEECH_RATE,
-  DEFAULT_SPEECH_VOLUME,
-  VOICE_LOAD_TIMEOUT_MS,
-} from '@/types/constants';
+/*
+ * Copyright 2025 Robert Lindley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { ITtsEngine, TtsOptions } from '@/types';
+import { VOICE_LOAD_TIMEOUT_MS } from '@/types/constants';
 import { hasWebSpeechSupport } from '@/utils/common';
-import { isNull, hasElements } from '@/utils/guards';
+import { hasElements, isNull } from '@/utils/guards';
 
 /**
  * Web Speech API TTS engine implementation
@@ -142,14 +153,12 @@ export class WebSpeechEngine implements ITtsEngine {
    */
   private createUtterance(text: string, options: TtsOptions): SpeechSynthesisUtterance {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = options.lang || LocaleCode.EN_US;
-    utterance.rate = options.rate || DEFAULT_SPEECH_RATE;
-    utterance.pitch = options.pitch || DEFAULT_SPEECH_PITCH;
-    utterance.volume = options.volume || DEFAULT_SPEECH_VOLUME;
+    utterance.lang = options.lang ?? 'en-US';
+    utterance.rate = options.rate ?? 1;
+    utterance.pitch = options.pitch ?? 1;
+    utterance.volume = options.volume ?? 1;
     return utterance;
-  }
-
-  /**
+  } /**
    * Sets event handlers for the utterance
    * @param utterance - The SpeechSynthesisUtterance instance
    * @param resolve - Promise resolve function

@@ -1,11 +1,21 @@
-import {
-  DEFAULT_BASE_URL,
-  DEFAULT_SPEECH_RATE,
-  DEFAULT_SPEECH_VOLUME,
-  LocaleCode,
-  type ITtsEngine,
-  type TtsOptions,
-} from '@/types';
+/*
+ * Copyright 2025 Robert Lindley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { LocaleCode, type ITtsEngine, type TtsOptions } from '@/types';
+import { DEFAULT_BASE_URL, DEFAULT_SPEECH_RATE, DEFAULT_SPEECH_VOLUME } from '@/types/constants';
 import { hasAudioContextSupport, hasFetchSupport, wrapError } from '@/utils/common';
 import { isEmptyString, isNull } from '@/utils/guards';
 import { logger } from '@/utils/logger';
@@ -91,7 +101,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      this.availableVoices = await response.json();
+      this.availableVoices = (await response.json()) as OpenTtsVoice[];
     } catch (error) {
       // If we can't fetch voices, continue with empty list
       this.availableVoices = [];
@@ -119,7 +129,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
 
     try {
       const audioData = await this.synthesizeText(text, options);
-      await this.playAudioData(audioData, options.volume || DEFAULT_SPEECH_VOLUME);
+      await this.playAudioData(audioData, options.volume ?? DEFAULT_SPEECH_VOLUME);
     } catch (error) {
       throw wrapError(error, 'OpenTTS synthesis failed');
     }
@@ -175,7 +185,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
       voice.language.toLowerCase().startsWith(languagePrefix)
     );
 
-    return matchingVoice?.id || LocaleCode.EN_US;
+    return matchingVoice?.id ?? LocaleCode.EN_US;
   }
 
   /**
@@ -185,7 +195,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
    */
   private normalizeRate(rate?: number): number {
     // OpenTTS typically accepts rates between 0.5 and 2.0
-    return Math.max(0.5, Math.min(2, rate || DEFAULT_SPEECH_RATE));
+    return Math.max(0.5, Math.min(2, rate ?? DEFAULT_SPEECH_RATE));
   }
 
   /**
@@ -195,7 +205,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
    */
   private normalizePitch(pitch?: number): number {
     // OpenTTS typically accepts pitch between 0 and 100
-    return Math.max(0, Math.min(100, pitch || 50));
+    return Math.max(0, Math.min(100, pitch ?? 50));
   }
 
   /**
@@ -209,13 +219,18 @@ export class OpenTtsHttpEngine implements ITtsEngine {
     }
 
     return new Promise((resolve, reject) => {
-      this.audioContext!.decodeAudioData(
+      if (!this.audioContext) {
+        reject(new Error('AudioContext not available'));
+        return;
+      }
+
+      void this.audioContext.decodeAudioData(
         audioData,
         (audioBuffer) => {
           this.playAudioBuffer(audioBuffer, volume, resolve, reject);
         },
         (error) => {
-          reject(new Error(`Failed to decode audio: ${error}`));
+          reject(new Error(`Failed to decode audio: ${String(error)}`));
         }
       );
     });
@@ -257,7 +272,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
       this.currentAudioSource = source;
       source.start(0);
     } catch (error) {
-      reject(new Error(`Failed to play audio: ${error}`));
+      reject(new Error(`Failed to play audio: ${String(error)}`));
     }
   }
 

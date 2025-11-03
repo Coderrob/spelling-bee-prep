@@ -3,8 +3,8 @@ import type { ReactElement } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Settings } from '@/components/selectors/Settings';
 import { PracticePanel } from '@/features/practice/PracticePanel';
-import { ThemeProvider } from './providers/ThemeProvider';
 import { I18nProvider } from './providers/I18nProvider';
+import { ThemeProvider } from './providers/ThemeProvider';
 
 /**
  * The main application component that sets up the overall structure and state management.

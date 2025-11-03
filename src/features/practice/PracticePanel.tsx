@@ -1,18 +1,34 @@
+/*
+ * Copyright 2025 Robert Lindley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Suspense, lazy, useCallback, useEffect, useRef } from 'react';
 import type { ReactElement } from 'react';
-import { Box, Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material';
 import { RestartAlt } from '@mui/icons-material';
+import { Box, Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material';
 import anime from 'animejs';
+import { AnswerField } from '@/components/controls/AnswerField';
+import { PlayButton } from '@/components/controls/PlayButton';
+import { CorrectnessChip } from '@/components/feedback/CorrectnessChip';
+import { ScoreBar } from '@/components/feedback/ScoreBar';
+import { DEFAULT_WORDS } from '@/data/loaders/DefaultDataLoader';
+import { TtsService } from '@/services/tts/TtsService';
 import { usePracticeStore } from '@/store/practiceStore';
 import { useSettingsStore } from '@/store/settingsStore';
-import { PlayButton } from '@/components/controls/PlayButton';
-import { AnswerField } from '@/components/controls/AnswerField';
-import { ScoreBar } from '@/components/feedback/ScoreBar';
-import { CorrectnessChip } from '@/components/feedback/CorrectnessChip';
-import { TtsService } from '@/domain/services/tts/TtsService';
-import { DEFAULT_WORDS } from '@/data/loaders/DefaultDataLoader';
-import { hasContent } from '@/utils/guards';
 import { isBrowser } from '@/utils/common';
+import { hasContent } from '@/utils/guards';
 import {
   EmptyState,
   HintDisplay,
@@ -121,7 +137,7 @@ export function PracticePanel(): ReactElement {
   }, [currentWord, speakCurrentWord]);
 
   useEffect(() => {
-    if (!isBrowser() || !cardRef.current || !currentWord) {
+    if (!isBrowser() || !cardRef.current) {
       return;
     }
 
@@ -137,7 +153,7 @@ export function PracticePanel(): ReactElement {
       ],
       easing: 'easeOutCubic',
     });
-  }, [currentWord?.word]);
+  }, [currentWord]);
 
   useEffect(() => {
     if (!isBrowser() || !cardRef.current || isCorrect === null) {
@@ -148,13 +164,13 @@ export function PracticePanel(): ReactElement {
       targets: cardRef.current,
       backgroundColor: [
         'rgba(20,24,40,0)',
-        isCorrect ? 'rgba(46, 204, 113, 0.08)' : 'rgba(231, 76, 60, 0.08)',
+        isCorrect ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)',
         'rgba(20,24,40,0)',
       ],
-      duration: 700,
-      easing: 'easeOutQuad',
+      duration: 800,
+      easing: 'easeInOutQuad',
     });
-  }, [isCorrect]);
+  }, [isCorrect, currentWord]);
 
   /**
    * Focuses and selects the answer input, deferring to the next animation frame for smooth UX.

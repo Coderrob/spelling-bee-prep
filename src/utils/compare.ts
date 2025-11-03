@@ -1,4 +1,20 @@
-import { normalize } from '@/utils/strings';
+/*
+ * Copyright 2025 Robert Lindley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { normalize } from './strings';
 
 /**
  * Calculates Levenshtein distance between two strings
@@ -9,7 +25,9 @@ import { normalize } from '@/utils/strings';
 export function levenshteinDistance(str1: string, str2: string): number {
   const len1 = str1.length;
   const len2 = str2.length;
-  const matrix: number[][] = new Array(len1 + 1).fill(null).map(() => new Array(len2 + 1).fill(0));
+  const matrix: number[][] = new Array<number[]>(len1 + 1)
+    .fill(null as unknown as number[])
+    .map(() => new Array<number>(len2 + 1).fill(0));
 
   for (let i = 0; i <= len1; i++) {
     matrix[i][0] = i;

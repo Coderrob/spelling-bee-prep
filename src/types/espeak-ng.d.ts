@@ -9,9 +9,7 @@ declare module 'espeak-ng' {
     callMain(args: string[]): number;
   }
 
-  interface EspeakModuleFactory {
-    (options: { arguments: string[] }): Promise<EspeakModule>;
-  }
+  type EspeakModuleFactory = (options: { arguments: string[] }) => Promise<EspeakModule>;
 
   const ESpeakNG: EspeakModuleFactory;
   export default ESpeakNG;

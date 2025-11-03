@@ -1,11 +1,27 @@
+/*
+ * Copyright 2025 Robert Lindley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useMemo } from 'react';
 import type { ReactElement } from 'react';
-import type { EChartsOption } from 'echarts';
 import { Box, Stack, Typography } from '@mui/material';
 import type { PracticeAttempt } from '@/types';
 import { Difficulty } from '@/types';
 import { typedEntries } from '@/utils/collections/typedEntries';
 import { InsightCard, formatDifficultyLabel } from './insights';
+import type { EChartsOption } from 'echarts';
 
 /**
  * Props for the PracticeInsights component.
@@ -42,18 +58,19 @@ export function PracticeInsights({
 
   /** ECharts option for the trend line chart. */
   const trendOption = useMemo<EChartsOption>(() => {
+    const attempts = sortedHistory.map((_attempt, index) => `Attempt ${index + 1}`);
+
+    const correctSeries: number[] = [];
+    const incorrectSeries: number[] = [];
     let correct = 0;
     let incorrect = 0;
 
-    const attempts = sortedHistory.map((_attempt, index) => `Attempt ${index + 1}`);
-    const correctSeries = sortedHistory.map((attempt) => {
+    for (const attempt of sortedHistory) {
       correct += attempt.correct ? 1 : 0;
-      return correct;
-    });
-    const incorrectSeries = sortedHistory.map((attempt) => {
       incorrect += attempt.correct ? 0 : 1;
-      return incorrect;
-    });
+      correctSeries.push(correct);
+      incorrectSeries.push(incorrect);
+    }
 
     return {
       color: ['#2ecc71', '#e74c3c'],

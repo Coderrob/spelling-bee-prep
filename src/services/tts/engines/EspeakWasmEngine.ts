@@ -1,13 +1,24 @@
-import {
-  DEFAULT_SPEECH_RATE,
-  DEFAULT_SPEECH_VOLUME,
-  LocaleCode,
-  type ITtsEngine,
-  type TtsOptions,
-} from '@/types';
-import type { EspeakModule } from 'espeak-ng';
+/*
+ * Copyright 2025 Robert Lindley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { LocaleCode, type ITtsEngine, type TtsOptions } from '@/types';
+import { DEFAULT_SPEECH_RATE, DEFAULT_SPEECH_VOLUME } from '@/types/constants';
 import { hasAudioContextSupport, hasWebAssemblySupport, wrapError } from '@/utils/common';
 import { isEmptyString, isNull } from '@/utils/guards';
+import type { EspeakModule } from 'espeak-ng';
 
 /**
  * Espeak-ng WASM TTS engine implementation
@@ -38,10 +49,10 @@ export class EspeakWasmEngine implements ITtsEngine {
    * Retrieves available voices (not applicable for Espeak-ng WASM)
    * @returns An empty array as Espeak-ng uses its own internal voice system
    */
-  async getVoices(): Promise<SpeechSynthesisVoice[]> {
+  getVoices(): Promise<SpeechSynthesisVoice[]> {
     // Espeak-ng WASM doesn't use SpeechSynthesisVoice interface
     // It has its own internal voice system
-    return [];
+    return Promise.resolve([]);
   }
 
   /**
@@ -63,8 +74,8 @@ export class EspeakWasmEngine implements ITtsEngine {
 
     try {
       await this.loadEspeakModule();
-      const audioBuffer = await this.synthesizeSpeech(text, options);
-      await this.playAudioBuffer(audioBuffer, options.volume || DEFAULT_SPEECH_VOLUME);
+      const audioBuffer = this.synthesizeSpeech(text, options);
+      await this.playAudioBuffer(audioBuffer, options.volume ?? DEFAULT_SPEECH_VOLUME);
     } catch (error) {
       throw wrapError(error, 'Espeak WASM synthesis failed');
     }
@@ -104,7 +115,7 @@ export class EspeakWasmEngine implements ITtsEngine {
    * @param options - TTS options including language, rate, pitch
    * @returns AudioBuffer containing the synthesized speech
    */
-  private async synthesizeSpeech(text: string, options: TtsOptions): Promise<AudioBuffer> {
+  private synthesizeSpeech(text: string, options: TtsOptions): AudioBuffer {
     if (!this.espeakModule || !this.audioContext) {
       throw new Error('Espeak module or AudioContext not available');
     }
@@ -114,7 +125,7 @@ export class EspeakWasmEngine implements ITtsEngine {
     const pitch = this.normalizePitch(options.pitch);
 
     // Generate phonetic representation using espeak-ng
-    const phonemeFile = 'phonemes_' + Date.now() + '.txt';
+    const phonemeFile = `phonemes_${Date.now()}.txt`;
 
     try {
       // Run espeak-ng to generate phoneme data
@@ -129,7 +140,7 @@ export class EspeakWasmEngine implements ITtsEngine {
         voice,
         `-s${Math.round(rate * 175)}`, // espeak rate: 80-450 wpm, default 175
         `-p${Math.round(pitch)}`, // espeak pitch: 0-99
-        `"${text.replaceAll('"', '\\"')}"`,
+        String.raw`"${text.replaceAll('"', '\\"')}"`,
       ]);
 
       if (exitCode !== 0) {
@@ -182,7 +193,12 @@ export class EspeakWasmEngine implements ITtsEngine {
     };
 
     const normalizedLang = lang.toLowerCase();
-    return langMap[normalizedLang] || langMap[normalizedLang.split('-')[0]] || LocaleCode.EN_US;
+    if (langMap[normalizedLang]) {
+      return langMap[normalizedLang];
+    }
+
+    const langCode = normalizedLang.split('-')[0];
+    return langMap[langCode] ?? LocaleCode.EN_US.toLocaleLowerCase();
   }
 
   /**
@@ -192,7 +208,7 @@ export class EspeakWasmEngine implements ITtsEngine {
    */
   private normalizeRate(rate?: number): number {
     // Convert to espeak rate multiplier (0.1 to 10, default 1)
-    return Math.max(0.1, Math.min(10, rate || DEFAULT_SPEECH_RATE));
+    return Math.max(0.1, Math.min(10, rate ?? DEFAULT_SPEECH_RATE));
   }
 
   /**
@@ -258,7 +274,7 @@ export class EspeakWasmEngine implements ITtsEngine {
   private calculateEnvelope(sample: number, totalSamples: number): number {
     const attackTime = 0.02; // 20ms attack
     const releaseTime = 0.05; // 50ms release
-    const sampleRate = this.audioContext?.sampleRate || 44100;
+    const sampleRate = this.audioContext?.sampleRate ?? 44100;
 
     const attackSamples = attackTime * sampleRate;
     const releaseSamples = releaseTime * sampleRate;
@@ -306,7 +322,7 @@ export class EspeakWasmEngine implements ITtsEngine {
         this.currentAudioSource = source;
         source.start(0);
       } catch (error) {
-        reject(new Error(`Failed to play audio: ${error}`));
+        reject(new Error(`Failed to play audio: ${String(error)}`));
       }
     });
   }

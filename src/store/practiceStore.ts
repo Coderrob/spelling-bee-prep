@@ -1,6 +1,28 @@
+/*
+ * Copyright 2025 Robert Lindley
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { create } from 'zustand';
-import type { PracticeAttempt, PracticeStatistics, WordEntry } from '@/types';
-import { PracticeMode, Difficulty, HintType } from '@/types';
+import {
+  type PracticeAttempt,
+  PracticeMode,
+  type PracticeStatistics,
+  type WordEntry,
+  type Difficulty,
+  HintType,
+} from '@/types';
 import {
   appendPracticeAttempt,
   loadPracticeHistory,
@@ -136,7 +158,7 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
     } else {
       set({
         showHint: !state.showHint,
-        hintType: state.showHint ? null : state.hintType || HintType.DEFINITION,
+        hintType: state.showHint ? null : (state.hintType ?? HintType.DEFINITION),
       });
     }
   },
@@ -164,9 +186,7 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
 
       const requiresNewWord =
         !state.currentWord ||
-        (nextSelected.length > 0 &&
-          state.currentWord !== null &&
-          !nextSelected.includes(state.currentWord.difficulty));
+        (nextSelected.length > 0 && !nextSelected.includes(state.currentWord.difficulty));
 
       if (!requiresNewWord) {
         return {

@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import type { ITtsEngine, TtsOptions } from '@/types';
-import { VOICE_LOAD_TIMEOUT_MS } from '@/types/constants';
+import { LocaleCode, type ITtsEngine, type TtsOptions } from '@/types';
+import {
+  DEFAULT_SPEECH_PITCH,
+  DEFAULT_SPEECH_RATE,
+  DEFAULT_SPEECH_VOLUME,
+  VOICE_LOAD_TIMEOUT_MS,
+} from '@/types/constants';
 import { hasWebSpeechSupport } from '@/utils/common';
 import { hasElements, isNull } from '@/utils/guards';
 
@@ -153,12 +158,14 @@ export class WebSpeechEngine implements ITtsEngine {
    */
   private createUtterance(text: string, options: TtsOptions): SpeechSynthesisUtterance {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = options.lang ?? 'en-US';
-    utterance.rate = options.rate ?? 1;
-    utterance.pitch = options.pitch ?? 1;
-    utterance.volume = options.volume ?? 1;
+    utterance.lang = options.lang ?? LocaleCode.EN_US;
+    utterance.rate = options.rate ?? DEFAULT_SPEECH_RATE;
+    utterance.pitch = options.pitch ?? DEFAULT_SPEECH_PITCH;
+    utterance.volume = options.volume ?? DEFAULT_SPEECH_VOLUME;
     return utterance;
-  } /**
+  }
+
+  /**
    * Sets event handlers for the utterance
    * @param utterance - The SpeechSynthesisUtterance instance
    * @param resolve - Promise resolve function

@@ -8,7 +8,8 @@ const resources = {
   },
 };
 
-await i18n.use(initReactI18next).init({
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+i18n.use(initReactI18next).init({
   resources,
   lng: 'en',
   fallbackLng: 'en',

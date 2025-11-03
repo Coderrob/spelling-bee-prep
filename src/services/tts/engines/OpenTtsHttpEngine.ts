@@ -17,7 +17,7 @@
 import { LocaleCode, type ITtsEngine, type TtsOptions } from '@/types';
 import { DEFAULT_BASE_URL, DEFAULT_SPEECH_RATE, DEFAULT_SPEECH_VOLUME } from '@/types/constants';
 import { hasAudioContextSupport, hasFetchSupport, wrapError } from '@/utils/common';
-import { isEmptyString, isNull } from '@/utils/guards';
+import { isEmptyString, isError, isNull } from '@/utils/guards';
 import { logger } from '@/utils/logger';
 
 /**
@@ -77,7 +77,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
     } catch (error) {
       logger.error(
         'Failed to fetch OpenTTS voices',
-        error instanceof Error ? error : new Error(String(error))
+        isError(error) ? error : new Error(String(error))
       );
       return [];
     }

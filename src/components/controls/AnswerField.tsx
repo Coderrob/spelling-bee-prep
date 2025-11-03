@@ -83,3 +83,5 @@ export const AnswerField = forwardRef<HTMLInputElement, AnswerFieldProps>(
     );
   }
 );
+
+AnswerField.displayName = 'AnswerField';

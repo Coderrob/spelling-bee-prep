@@ -14,6 +14,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore } from '@/store/settingsStore';
 import { MIN_SPEECH_RATE, MAX_SPEECH_RATE, MIN_VOLUME, MAX_VOLUME } from '@/types/constants';
+import { isNumber } from '@/utils/guards';
 import type { ReactElement } from 'react';
 
 interface SettingsProps {
@@ -26,13 +27,13 @@ export function Settings({ open, onClose }: SettingsProps): ReactElement {
   const { speechRate, speechVolume, setSpeechRate, setSpeechVolume } = useSettingsStore();
 
   const handleRateChange = (_event: Event, value: number | number[]): void => {
-    if (typeof value === 'number') {
+    if (isNumber(value)) {
       setSpeechRate(value);
     }
   };
 
   const handleVolumeChange = (_event: Event, value: number | number[]): void => {
-    if (typeof value === 'number') {
+    if (isNumber(value)) {
       setSpeechVolume(value);
     }
   };

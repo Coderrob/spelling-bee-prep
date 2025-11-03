@@ -1,5 +1,7 @@
 import type { ITtsEngine, TtsOptions } from '@/types';
 import { VOICE_LOAD_TIMEOUT_MS } from '@/types/constants';
+import { hasWebSpeechSupport } from '@/utils/common';
+import { isNull, hasElements } from '@/utils/guards';
 
 /**
  * Web Speech API TTS engine implementation
@@ -8,17 +10,13 @@ export class WebSpeechEngine implements ITtsEngine {
   private readonly synth: SpeechSynthesis | null = null;
 
   constructor() {
-    if (this.isBrowserSupported()) {
+    if (hasWebSpeechSupport()) {
       this.synth = window.speechSynthesis;
     }
   }
 
-  private isBrowserSupported(): boolean {
-    return typeof window !== 'undefined' && 'speechSynthesis' in window;
-  }
-
   isSupported(): boolean {
-    return this.synth !== null;
+    return !isNull(this.synth);
   }
 
   async getVoices(): Promise<SpeechSynthesisVoice[]> {
@@ -44,7 +42,7 @@ export class WebSpeechEngine implements ITtsEngine {
   }
 
   private hasVoices(voices: SpeechSynthesisVoice[]): boolean {
-    return voices.length > 0;
+    return hasElements(voices);
   }
 
   private createVoiceTimeout(

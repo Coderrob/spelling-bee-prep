@@ -1,4 +1,6 @@
 import type { ITtsEngine, TtsOptions } from '@/types';
+import { hasAudioContextSupport, hasFetchSupport, wrapError } from '@/utils/common';
+import { isEmptyString, isNull } from '@/utils/guards';
 
 interface OpenTtsVoice {
   id: string;
@@ -20,18 +22,14 @@ export class OpenTtsHttpEngine implements ITtsEngine {
   constructor(baseUrl: string = 'http://localhost:5500') {
     this.baseUrl = baseUrl.replace(/\/$/, ''); // Remove trailing slash
 
-    if (this.isAudioContextSupported()) {
+    if (hasAudioContextSupport()) {
       this.audioContext = new AudioContext();
     }
   }
 
-  private isAudioContextSupported(): boolean {
-    return typeof window !== 'undefined' && 'AudioContext' in window;
-  }
-
   isSupported(): boolean {
     // OpenTTS requires fetch API and AudioContext
-    return typeof window !== 'undefined' && 'fetch' in window && this.audioContext !== null;
+    return hasFetchSupport() && !isNull(this.audioContext);
   }
 
   async getVoices(): Promise<SpeechSynthesisVoice[]> {
@@ -75,7 +73,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
       throw new Error('OpenTTS engine is not supported in this environment');
     }
 
-    if (!text || text.trim().length === 0) {
+    if (isEmptyString(text)) {
       return;
     }
 
@@ -85,10 +83,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
       const audioData = await this.synthesizeText(text, options);
       await this.playAudioData(audioData, options.volume || 1);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`OpenTTS synthesis failed: ${error.message}`);
-      }
-      throw new Error('OpenTTS synthesis failed with unknown error');
+      throw wrapError(error, 'OpenTTS synthesis failed');
     }
   }
 

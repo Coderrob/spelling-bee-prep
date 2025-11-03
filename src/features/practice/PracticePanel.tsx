@@ -12,6 +12,7 @@ import { CorrectnessChip } from '@/components/feedback/CorrectnessChip';
 import { TtsService } from '@/domain/services/tts/TtsService';
 import { DEFAULT_WORDS } from '@/data/loaders/DefaultDataLoader';
 import { HintType } from '@/types';
+import { hasContent } from '@/utils/guards';
 
 const ttsService = new TtsService();
 
@@ -62,7 +63,7 @@ export function PracticePanel(): ReactElement {
   };
 
   const isInputValid = (): boolean => {
-    return userInput.trim().length > 0;
+    return hasContent(userInput);
   };
 
   useEffect(() => {

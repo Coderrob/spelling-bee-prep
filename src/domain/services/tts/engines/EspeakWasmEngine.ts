@@ -1,5 +1,7 @@
 import type { ITtsEngine, TtsOptions } from '@/types';
 import type { EspeakModule } from 'espeak-ng';
+import { hasAudioContextSupport, hasWebAssemblySupport, wrapError } from '@/utils/common';
+import { isEmptyString, isNull } from '@/utils/guards';
 
 /**
  * Espeak-ng WASM TTS engine implementation
@@ -13,17 +15,13 @@ export class EspeakWasmEngine implements ITtsEngine {
   private loadingPromise: Promise<void> | null = null;
 
   constructor() {
-    if (this.isAudioContextSupported()) {
+    if (hasAudioContextSupport()) {
       this.audioContext = new AudioContext();
     }
   }
 
-  private isAudioContextSupported(): boolean {
-    return typeof window !== 'undefined' && 'AudioContext' in window;
-  }
-
   isSupported(): boolean {
-    return typeof window !== 'undefined' && 'WebAssembly' in window && this.audioContext !== null;
+    return hasWebAssemblySupport() && !isNull(this.audioContext);
   }
 
   async getVoices(): Promise<SpeechSynthesisVoice[]> {
@@ -37,7 +35,7 @@ export class EspeakWasmEngine implements ITtsEngine {
       throw new Error('Espeak WASM is not supported in this environment');
     }
 
-    if (!text || text.trim().length === 0) {
+    if (isEmptyString(text)) {
       return;
     }
 
@@ -48,10 +46,7 @@ export class EspeakWasmEngine implements ITtsEngine {
       const audioBuffer = await this.synthesizeSpeech(text, options);
       await this.playAudioBuffer(audioBuffer, options.volume || 1);
     } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Espeak WASM synthesis failed: ${error.message}`);
-      }
-      throw new Error('Espeak WASM synthesis failed with unknown error');
+      throw wrapError(error, 'Espeak WASM synthesis failed');
     }
   }
 
@@ -72,9 +67,7 @@ export class EspeakWasmEngine implements ITtsEngine {
         this.espeakModule = await instance.ready;
       } catch (error) {
         this.loadingPromise = null;
-        throw new Error(
-          `Failed to load Espeak-ng WASM module: ${error instanceof Error ? error.message : 'Unknown error'}`
-        );
+        throw wrapError(error, 'Failed to load Espeak-ng WASM module');
       }
     })();
 

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { WordEntry, PracticeStatistics } from '@/types';
 import { PracticeMode, Difficulty, HintType } from '@/types';
+import { isDefined } from '@/utils/guards';
 
 interface PracticeState extends PracticeStatistics {
   currentWord: WordEntry | null;
@@ -162,7 +163,7 @@ function getAvailableWords(state: PracticeState): WordEntry[] {
 }
 
 function shouldFilterByDifficulty(state: PracticeState): boolean {
-  return state.mode === PracticeMode.DIFFICULTY && state.selectedDifficulty !== null;
+  return state.mode === PracticeMode.DIFFICULTY && isDefined(state.selectedDifficulty);
 }
 
 function filterByDifficulty(words: WordEntry[], difficulty: Difficulty): WordEntry[] {

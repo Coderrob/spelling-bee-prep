@@ -89,6 +89,25 @@ export function PracticePanel(): ReactElement {
     </Suspense>
   ) : null;
 
+  /**
+   * Speaks the provided word using the current text-to-speech configuration.
+   *
+   * @param word - Word to play audibly
+   */
+  const speakCurrentWord = useCallback(
+    async (word: string): Promise<void> => {
+      try {
+        await ttsService.speak(word, {
+          rate: speechRate,
+          volume: speechVolume,
+        });
+      } catch (error) {
+        console.error('TTS error:', error);
+      }
+    },
+    [speechRate, speechVolume]
+  );
+
   useEffect(() => {
     setWordPool(DEFAULT_WORDS);
   }, [setWordPool]);
@@ -98,19 +117,8 @@ export function PracticePanel(): ReactElement {
       return;
     }
 
-    const speakWord = async (): Promise<void> => {
-      try {
-        await ttsService.speak(currentWord.word, {
-          rate: speechRate,
-          volume: speechVolume,
-        });
-      } catch (error) {
-        console.error('TTS error:', error);
-      }
-    };
-
-    void speakWord();
-  }, [currentWord, speechRate, speechVolume]);
+    void speakCurrentWord(currentWord.word);
+  }, [currentWord, speakCurrentWord]);
 
   useEffect(() => {
     if (!isBrowser() || !cardRef.current || !currentWord) {
@@ -178,15 +186,8 @@ export function PracticePanel(): ReactElement {
       return;
     }
 
-    try {
-      await ttsService.speak(currentWord.word, {
-        rate: speechRate,
-        volume: speechVolume,
-      });
-    } catch (error) {
-      console.error('TTS error:', error);
-    }
-  }, [currentWord, speechRate, speechVolume]);
+    await speakCurrentWord(currentWord.word);
+  }, [currentWord, speakCurrentWord]);
 
   /**
    * Advances to the next word and re-focuses the answer input.

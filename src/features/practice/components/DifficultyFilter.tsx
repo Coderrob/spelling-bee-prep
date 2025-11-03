@@ -38,11 +38,7 @@ export function DifficultyFilter(): ReactElement {
    */
   function handleChange(event: SelectChangeEvent<string[]>): void {
     const value = event.target.value;
-    const nextSelection = Array.isArray(value)
-      ? (value as Difficulty[])
-      : (value.split(',').filter(Boolean) as Difficulty[]);
-
-    setDifficulties(nextSelection);
+    setDifficulties(value as Difficulty[]);
   }
 
   const label = t('practice.filters.difficulty', 'Filter by difficulty');

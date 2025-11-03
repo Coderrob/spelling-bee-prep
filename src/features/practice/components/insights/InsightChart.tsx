@@ -50,10 +50,10 @@ export function InsightChart({
       chartInstance.current?.resize();
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener?.('resize', handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener?.('resize', handleResize);
       chartInstance.current?.dispose();
       chartInstance.current = null;
     };

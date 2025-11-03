@@ -4,6 +4,7 @@ import type { EChartsOption } from 'echarts';
 import { Box, Stack, Typography } from '@mui/material';
 import type { PracticeAttempt } from '@/types';
 import { Difficulty } from '@/types';
+import { typedEntries } from '@/utils/collections/typedEntries';
 import { InsightCard, formatDifficultyLabel } from './insights';
 
 /**
@@ -113,7 +114,7 @@ export function PracticeInsights({
       counts[attempt.difficulty] += 1;
     }
 
-    return (Object.entries(counts) as [Difficulty, number][])
+    return typedEntries(counts)
       .filter(([, value]) => value > 0)
       .map(([difficulty, value]) => ({
         name: formatDifficultyLabel(difficulty),

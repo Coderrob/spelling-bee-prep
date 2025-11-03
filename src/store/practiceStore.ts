@@ -154,22 +154,35 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
    * @param difficulties - Ordered collection of allowed difficulty levels
    */
   setDifficulties: (difficulties) => {
-    set((state) => ({
-      selectedDifficulties: difficulties,
-      usedWords: new Set(),
-      currentWord:
-        state.currentWord &&
-        difficulties.length > 0 &&
-        !difficulties.includes(state.currentWord.difficulty)
-          ? null
-          : state.currentWord,
-    }));
+    set((state) => {
+      const nextSelected = difficulties;
+      const baseState: PracticeState = {
+        ...state,
+        selectedDifficulties: nextSelected,
+        usedWords: new Set(),
+      };
 
-    const refreshedState = get();
-    if (!refreshedState.currentWord) {
-      const next = refreshedState.getRandomWord();
-      refreshedState.setCurrentWord(next);
-    }
+      const requiresNewWord =
+        !state.currentWord ||
+        (nextSelected.length > 0 &&
+          state.currentWord !== null &&
+          !nextSelected.includes(state.currentWord.difficulty));
+
+      if (!requiresNewWord) {
+        return {
+          selectedDifficulties: nextSelected,
+          usedWords: baseState.usedWords,
+        };
+      }
+
+      const { word, usedWords } = selectNextWord(baseState);
+
+      return {
+        selectedDifficulties: nextSelected,
+        usedWords,
+        currentWord: word,
+      };
+    });
   },
 
   /**
@@ -201,14 +214,13 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
    */
   getRandomWord: () => {
     const state = get();
-    const availableWords = getAvailableWords(state);
+    const { word, usedWords } = selectNextWord(state);
 
-    if (isPoolExhausted(availableWords)) {
-      resetUsedWords(set);
-      return getRandomFromPool(state.wordPool, state);
+    if (usedWords !== state.usedWords) {
+      set({ usedWords });
     }
 
-    return getRandomFromPool(availableWords, state);
+    return word;
   },
 }));
 
@@ -358,12 +370,22 @@ function isPoolExhausted(words: WordEntry[]): boolean {
 }
 
 /**
- * Clears the `usedWords` set to allow the pool to cycle again.
+ * Selects the next eligible word and handles pool resets when exhausted.
  *
- * @param set - Zustand setter
+ * @param state - Current practice state snapshot
+ * @returns Tuple containing the chosen word and the updated used-word set
  */
-function resetUsedWords(set: (fn: (state: PracticeStore) => Partial<PracticeStore>) => void): void {
-  set(() => ({ usedWords: new Set() }));
+function selectNextWord(state: PracticeState): { word: WordEntry | null; usedWords: Set<string> } {
+  const availableWords = getAvailableWords(state);
+
+  if (isPoolExhausted(availableWords)) {
+    const resetUsedWords = new Set<string>();
+    const resetState: PracticeState = { ...state, usedWords: resetUsedWords };
+    const nextWord = getRandomFromPool(state.wordPool, resetState);
+    return { word: nextWord, usedWords: resetUsedWords };
+  }
+
+  return { word: getRandomFromPool(availableWords, state), usedWords: state.usedWords };
 }
 
 /**

@@ -28,6 +28,26 @@ export default defineConfig({
           },
         ],
       },
+      workbox: {
+        // Increase the file size limit to accommodate espeak-ng WASM file
+        maximumFileSizeToCacheInBytes: 20 * 1024 * 1024, // 20MB
+        // Exclude large WASM files from precaching - they'll be runtime cached instead
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,json}'],
+        // Runtime caching for WASM files
+        runtimeCaching: [
+          {
+            urlPattern: /\.wasm$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'wasm-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+        ],
+      },
     }),
   ],
   resolve: {

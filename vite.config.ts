@@ -1,11 +1,65 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
-import path from 'path';
+import path from 'node:path';
+
+/**
+ * Plugin to suppress expected warnings from third-party libraries
+ */
+function suppressThirdPartyWarnings() {
+  return {
+    name: 'suppress-third-party-warnings',
+    config() {
+      // Override console.warn during build to filter out specific warnings
+      const originalWarn = console.warn;
+      console.warn = (...args) => {
+        const msg = args[0];
+        if (
+          typeof msg === 'string' &&
+          (msg.includes("new URL('./', import.meta.url)") ||
+            msg.includes('espeak-ng') ||
+            msg.includes('@vite-ignore'))
+        ) {
+          // Suppress these expected warnings from espeak-ng
+          return;
+        }
+        originalWarn.apply(console, args);
+      };
+    },
+  };
+}
 
 // https://vite.dev/config/
 export default defineConfig({
+  optimizeDeps: {
+    exclude: ['espeak-ng'],
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      // Provide empty module for Node.js 'module' builtin used by espeak-ng
+      module: path.resolve(__dirname, './src/utils/empty-module.ts'),
+    },
+  },
+  build: {
+    // Increase chunk size warning limit for large WASM files
+    chunkSizeWarningLimit: 2000, // 2MB (espeak-ng WASM is large)
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress warnings from espeak-ng about runtime URL resolution
+        if (warning.code === 'UNUSED_EXTERNAL_IMPORT' || warning.message?.includes('espeak-ng')) {
+          return;
+        }
+        warn(warning);
+      },
+    },
+    // Suppress warnings for dynamic imports that are runtime-resolved
+    commonjsOptions: {
+      ignoreDynamicRequires: true,
+    },
+  },
   plugins: [
+    suppressThirdPartyWarnings(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -50,9 +104,4 @@ export default defineConfig({
       },
     }),
   ],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
 });

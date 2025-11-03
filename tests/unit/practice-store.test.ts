@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { usePracticeStore } from '../../src/store/practiceStore';
-import { WordEntry } from '../../src/types/models';
-import { Difficulty } from '../../src/types/enums';
+import { Difficulty, HintType } from '../../src/types/enums';
+import type { WordEntry } from '../../src/types/models';
 
 describe('Practice Store', () => {
   const mockWords: WordEntry[] = [
@@ -74,16 +74,15 @@ describe('Practice Store', () => {
   it('should filter words by difficulty', () => {
     const store = usePracticeStore.getState();
     store.setWordPool(mockWords);
-    store.setMode('difficulty');
-    store.setDifficulty('easy');
+    store.setDifficulties([Difficulty.EASY]);
     const word = store.getRandomWord();
-    expect(word?.difficulty).toBe('easy');
+    expect(word?.difficulty).toBe(Difficulty.EASY);
   });
 
   it('should toggle hint', () => {
     const store = usePracticeStore.getState();
     expect(store.showHint).toBe(false);
-    store.toggleHint('definition');
+    store.toggleHint(HintType.DEFINITION);
     const updatedStore = usePracticeStore.getState();
     expect(updatedStore.showHint).toBe(true);
     expect(updatedStore.hintType).toBe('definition');

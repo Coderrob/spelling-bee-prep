@@ -8,7 +8,8 @@ afterEach(() => {
 });
 
 // Mock Web Speech API
-global.speechSynthesis = {
+/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+(globalThis as any).speechSynthesis = {
   speak: (utterance: SpeechSynthesisUtterance) => {
     // Simulate speech completion
     setTimeout(() => {
@@ -17,19 +18,32 @@ global.speechSynthesis = {
       }
     }, 0);
   },
-  cancel: () => {},
-  pause: () => {},
-  resume: () => {},
+  cancel: () => {
+    // Mock implementation
+  },
+  pause: () => {
+    // Mock implementation
+  },
+  resume: () => {
+    // Mock implementation
+  },
   getVoices: () => [],
   speaking: false,
   pending: false,
   paused: false,
-  addEventListener: () => {},
-  removeEventListener: () => {},
+  addEventListener: () => {
+    // Mock implementation
+  },
+  removeEventListener: () => {
+    // Mock implementation
+  },
   dispatchEvent: () => false,
 } as unknown as SpeechSynthesis;
 
-global.SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
+/**
+ * Mock SpeechSynthesisUtterance class
+ */
+(globalThis as any).SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
   text = '';
   lang = '';
   voice = null;
@@ -43,7 +57,12 @@ global.SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
   onresume: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => void) | null = null;
   onmark: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => void) | null = null;
   onboundary: ((this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => void) | null = null;
-  addEventListener = () => {};
-  removeEventListener = () => {};
-  dispatchEvent = () => false;
+  addEventListener = (): void => {
+    // Mock implementation
+  };
+  removeEventListener = (): void => {
+    // Mock implementation
+  };
+  dispatchEvent = (): boolean => false;
 } as unknown as typeof SpeechSynthesisUtterance;
+/* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */

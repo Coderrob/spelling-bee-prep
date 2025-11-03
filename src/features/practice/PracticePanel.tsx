@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import type { ReactElement } from 'react';
-import { Box, Card, CardContent, Stack, Button, Alert, Typography } from '@mui/material';
-import { NavigateNext, Lightbulb, RestartAlt } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
+import { Box, Card, CardContent, Stack, Button, Typography } from '@mui/material';
+import { RestartAlt } from '@mui/icons-material';
 import { usePracticeStore } from '@/store/practiceStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { PlayButton } from '@/components/controls/PlayButton';
@@ -11,13 +10,12 @@ import { ScoreBar } from '@/components/feedback/ScoreBar';
 import { CorrectnessChip } from '@/components/feedback/CorrectnessChip';
 import { TtsService } from '@/domain/services/tts/TtsService';
 import { DEFAULT_WORDS } from '@/data/loaders/DefaultDataLoader';
-import { HintType } from '@/types';
 import { hasContent } from '@/utils/guards';
+import { EmptyState, HintDisplay, AnswerButtons, FeedbackDisplay } from './components';
 
 const ttsService = new TtsService();
 
 export function PracticePanel(): ReactElement {
-  const { t } = useTranslation();
   const {
     currentWord,
     userInput,
@@ -73,18 +71,7 @@ export function PracticePanel(): ReactElement {
   }, [currentWord, handleSpeak]);
 
   if (!currentWord) {
-    return (
-      <Card>
-        <CardContent>
-          <Typography variant="h5" gutterBottom>
-            {t('practice.title')}
-          </Typography>
-          <Button variant="contained" onClick={nextWord} fullWidth>
-            {t('practice.startPractice')}
-          </Button>
-        </CardContent>
-      </Card>
-    );
+    return <EmptyState onStart={nextWord} />;
   }
 
   return (
@@ -111,7 +98,7 @@ export function PracticePanel(): ReactElement {
             <CorrectnessChip difficulty={currentWord.difficulty} />
           </Box>
 
-          {showHint && hintType && renderHint()}
+          {showHint && hintType && <HintDisplay hintType={hintType} currentWord={currentWord} />}
 
           <form onSubmit={handleSubmit}>
             <Stack spacing={2}>
@@ -121,7 +108,11 @@ export function PracticePanel(): ReactElement {
                 disabled={isCorrect !== null}
               />
 
-              {isCorrect === null ? renderAnswerButtons() : renderFeedback()}
+              {isCorrect === null ? (
+                <AnswerButtons onHint={toggleHint} isSubmitDisabled={!isInputValid()} />
+              ) : (
+                <FeedbackDisplay isCorrect={isCorrect} currentWord={currentWord} onNext={nextWord} />
+              )}
             </Stack>
           </form>
 
@@ -132,69 +123,4 @@ export function PracticePanel(): ReactElement {
       </CardContent>
     </Card>
   );
-
-  function renderHint(): ReactElement {
-    const hintContent = getHintContent();
-    return (
-      <Alert severity="info">
-        <Typography variant="subtitle2" fontWeight="bold">
-          {t(`practice.hints.${hintType}`)}:
-        </Typography>
-        <Typography>{hintContent}</Typography>
-      </Alert>
-    );
-  }
-
-  function getHintContent(): string {
-    if (!currentWord) return '';
-    switch (hintType) {
-      case HintType.DEFINITION:
-        return currentWord.definition;
-      case HintType.USAGE_EXAMPLE:
-        return currentWord.usageExample || '';
-      case HintType.ORIGIN:
-        return currentWord.origin || '';
-      default:
-        return '';
-    }
-  }
-
-  function renderAnswerButtons(): ReactElement {
-    return (
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <Button
-          variant="outlined"
-          startIcon={<Lightbulb />}
-          onClick={() => toggleHint(HintType.DEFINITION)}
-          fullWidth
-        >
-          {t('practice.hint')}
-        </Button>
-        <Button type="submit" variant="contained" fullWidth disabled={!isInputValid()}>
-          {t('practice.submit')}
-        </Button>
-      </Box>
-    );
-  }
-
-  function renderFeedback(): ReactElement {
-    return (
-      <>
-        <Alert severity={isCorrect ? 'success' : 'error'}>
-          <Typography variant="h6">
-            {isCorrect ? t('practice.correct') : t('practice.incorrect')}
-          </Typography>
-          <Typography>
-            The word is: <strong>{currentWord?.word}</strong>
-          </Typography>
-          <Typography variant="body2" sx={{ mt: 1 }}>
-            {currentWord?.definition}
-          </Typography>
-        </Alert>
-        <Button variant="contained" startIcon={<NavigateNext />} onClick={nextWord} fullWidth>
-          {t('practice.nextWord')}
-        </Button>
-      </>
-    );
-  }
 }

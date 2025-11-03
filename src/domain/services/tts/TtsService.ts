@@ -4,14 +4,21 @@ import { WebSpeechEngine } from './engines/WebSpeechEngine';
 import { EspeakWasmEngine } from './engines/EspeakWasmEngine';
 import { OpenTtsHttpEngine } from './engines/OpenTtsHttpEngine';
 
+interface TtsServiceConfig {
+  preferredEngine?: TtsEngine;
+  openTtsBaseUrl?: string;
+}
+
 /**
  * TTS service facade that manages multiple TTS engines
  */
 export class TtsService implements ITtsService {
   private engine: ITtsEngine;
+  private readonly config: TtsServiceConfig;
 
-  constructor(preferredEngine?: TtsEngine) {
-    this.engine = this.selectEngine(preferredEngine);
+  constructor(config: TtsServiceConfig = {}) {
+    this.config = config;
+    this.engine = this.selectEngine(config.preferredEngine);
   }
 
   private selectEngine(preferredEngine?: TtsEngine): ITtsEngine {
@@ -20,7 +27,8 @@ export class TtsService implements ITtsService {
     }
 
     if (preferredEngine === TtsEngine.OPEN_TTS) {
-      return this.tryEngine(new OpenTtsHttpEngine());
+      const baseUrl = this.config.openTtsBaseUrl || 'http://localhost:5500';
+      return this.tryEngine(new OpenTtsHttpEngine(baseUrl));
     }
 
     return this.selectDefaultEngine();
@@ -32,11 +40,18 @@ export class TtsService implements ITtsService {
       return webSpeech;
     }
 
+    // Try OpenTTS as fallback if WebSpeech is not available
+    const openTts = new OpenTtsHttpEngine(this.config.openTtsBaseUrl || 'http://localhost:5500');
+    if (openTts.isSupported()) {
+      return openTts;
+    }
+
+    // Finally try Espeak WASM
     return new EspeakWasmEngine();
   }
 
   private tryEngine(engine: ITtsEngine): ITtsEngine {
-    return engine.isSupported() ? engine : new WebSpeechEngine();
+    return engine.isSupported() ? engine : this.selectDefaultEngine();
   }
 
   async speak(text: string, options?: TtsOptions): Promise<void> {

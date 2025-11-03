@@ -14,21 +14,22 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore } from '@/store/settingsStore';
 import { MIN_SPEECH_RATE, MAX_SPEECH_RATE, MIN_VOLUME, MAX_VOLUME } from '@/types/constants';
+import type { ReactElement } from 'react';
 
 interface SettingsProps {
   open: boolean;
   onClose: () => void;
 }
 
-export function Settings({ open, onClose }: SettingsProps) {
+export function Settings({ open, onClose }: SettingsProps): ReactElement {
   const { t, i18n } = useTranslation();
   const { speechRate, speechVolume, setSpeechRate, setSpeechVolume } = useSettingsStore();
 
-  const handleRateChange = (_: Event, value: number | number[]) => {
+  const handleRateChange = (_: Event, value: number | number[]): void => {
     setSpeechRate(value as number);
   };
 
-  const handleVolumeChange = (_: Event, value: number | number[]) => {
+  const handleVolumeChange = (_: Event, value: number | number[]): void => {
     setSpeechVolume(value as number);
   };
 

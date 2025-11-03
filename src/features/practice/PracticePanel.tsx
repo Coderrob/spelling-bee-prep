@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import type { ReactElement } from 'react';
 import { Box, Card, CardContent, Stack, Button, Alert, Typography } from '@mui/material';
 import { NavigateNext, Lightbulb, RestartAlt } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +15,7 @@ import { HintType } from '@/types';
 
 const ttsService = new TtsService();
 
-export function PracticePanel() {
+export function PracticePanel(): ReactElement {
   const { t } = useTranslation();
   const {
     currentWord,
@@ -53,14 +54,14 @@ export function PracticePanel() {
     }
   }, [currentWord, speechRate, speechVolume]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     if (isInputValid()) {
       checkAnswer();
     }
   };
 
-  const isInputValid = () => {
+  const isInputValid = (): boolean => {
     return userInput.trim().length > 0;
   };
 
@@ -131,7 +132,7 @@ export function PracticePanel() {
     </Card>
   );
 
-  function renderHint() {
+  function renderHint(): ReactElement {
     const hintContent = getHintContent();
     return (
       <Alert severity="info">
@@ -143,7 +144,7 @@ export function PracticePanel() {
     );
   }
 
-  function getHintContent() {
+  function getHintContent(): string {
     if (!currentWord) return '';
     switch (hintType) {
       case HintType.DEFINITION:
@@ -157,7 +158,7 @@ export function PracticePanel() {
     }
   }
 
-  function renderAnswerButtons() {
+  function renderAnswerButtons(): ReactElement {
     return (
       <Box sx={{ display: 'flex', gap: 2 }}>
         <Button
@@ -175,7 +176,7 @@ export function PracticePanel() {
     );
   }
 
-  function renderFeedback() {
+  function renderFeedback(): ReactElement {
     return (
       <>
         <Alert severity={isCorrect ? 'success' : 'error'}>

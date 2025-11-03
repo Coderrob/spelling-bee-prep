@@ -1,5 +1,6 @@
 import { TextField } from '@mui/material';
 import { sanitizeInput } from '@/utils/security';
+import type { ReactElement } from 'react';
 
 interface AnswerFieldProps {
   value: string;
@@ -15,8 +16,8 @@ export function AnswerField({
   disabled = false,
   label = 'Type the word',
   autoFocus = true,
-}: AnswerFieldProps) {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+}: AnswerFieldProps): ReactElement {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const sanitized = sanitizeInput(event.target.value);
     onChange(sanitized);
   };

@@ -1,12 +1,13 @@
 import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
 import { Settings as SettingsIcon } from '@mui/icons-material';
 import { APP_NAME, APP_EMOJI } from '@/types/constants';
+import type { ReactElement } from 'react';
 
 interface TopBarProps {
   onSettingsClick: () => void;
 }
 
-export function TopBar({ onSettingsClick }: TopBarProps) {
+export function TopBar({ onSettingsClick }: TopBarProps): ReactElement {
   return (
     <AppBar position="static">
       <Toolbar>

@@ -1,18 +1,19 @@
 import { useState } from 'react';
+import type { ReactElement } from 'react';
 import { AppShell } from '@/components/layout/AppShell';
 import { Settings } from '@/components/selectors/Settings';
 import { PracticePanel } from '@/features/practice/PracticePanel';
 import { ThemeProvider } from './providers/ThemeProvider';
 import { I18nProvider } from './providers/I18nProvider';
 
-export function App() {
+export function App(): ReactElement {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const handleSettingsClick = () => {
+  const handleSettingsClick = (): void => {
     setSettingsOpen(true);
   };
 
-  const handleSettingsClose = () => {
+  const handleSettingsClose = (): void => {
     setSettingsOpen(false);
   };
 

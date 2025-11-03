@@ -1,13 +1,13 @@
 import { Box, Container } from '@mui/material';
 import { TopBar } from './TopBar';
-import type { ReactNode } from 'react';
+import type { ReactNode, ReactElement } from 'react';
 
 interface AppShellProps {
   children: ReactNode;
   onSettingsClick: () => void;
 }
 
-export function AppShell({ children, onSettingsClick }: AppShellProps) {
+export function AppShell({ children, onSettingsClick }: AppShellProps): ReactElement {
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <TopBar onSettingsClick={onSettingsClick} />

@@ -25,12 +25,16 @@ export function Settings({ open, onClose }: SettingsProps): ReactElement {
   const { t, i18n } = useTranslation();
   const { speechRate, speechVolume, setSpeechRate, setSpeechVolume } = useSettingsStore();
 
-  const handleRateChange = (_: Event, value: number | number[]): void => {
-    setSpeechRate(value as number);
+  const handleRateChange = (_event: Event, value: number | number[]): void => {
+    if (typeof value === 'number') {
+      setSpeechRate(value);
+    }
   };
 
-  const handleVolumeChange = (_: Event, value: number | number[]): void => {
-    setSpeechVolume(value as number);
+  const handleVolumeChange = (_event: Event, value: number | number[]): void => {
+    if (typeof value === 'number') {
+      setSpeechVolume(value);
+    }
   };
 
   return (

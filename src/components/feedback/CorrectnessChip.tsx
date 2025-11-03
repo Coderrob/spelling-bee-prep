@@ -1,4 +1,5 @@
 import { Chip } from '@mui/material';
+import type { ChipProps } from '@mui/material';
 import { Difficulty } from '@/types';
 import type { ReactElement } from 'react';
 
@@ -6,28 +7,23 @@ interface CorrectnessChipProps {
   difficulty: Difficulty;
 }
 
-enum DifficultyColor {
+type ChipColor = NonNullable<ChipProps['color']>;
+
+enum DifficultyColorMap {
   EASY = 'success',
   MEDIUM = 'warning',
   HARD = 'error',
 }
 
-function getDifficultyColor(difficulty: Difficulty): DifficultyColor {
-  switch (difficulty) {
-    case Difficulty.EASY:
-      return DifficultyColor.EASY;
-    case Difficulty.MEDIUM:
-      return DifficultyColor.MEDIUM;
-    case Difficulty.HARD:
-      return DifficultyColor.HARD;
-  }
+function getDifficultyColor(difficulty: Difficulty): ChipColor {
+  const colorMap: Record<Difficulty, ChipColor> = {
+    [Difficulty.EASY]: DifficultyColorMap.EASY as ChipColor,
+    [Difficulty.MEDIUM]: DifficultyColorMap.MEDIUM as ChipColor,
+    [Difficulty.HARD]: DifficultyColorMap.HARD as ChipColor,
+  };
+  return colorMap[difficulty];
 }
 
 export function CorrectnessChip({ difficulty }: CorrectnessChipProps): ReactElement {
-  return (
-    <Chip
-      label={difficulty.toUpperCase()}
-      color={getDifficultyColor(difficulty) as 'success' | 'warning' | 'error'}
-    />
-  );
+  return <Chip label={difficulty.toUpperCase()} color={getDifficultyColor(difficulty)} />;
 }

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { IDictionaryLoader, WordSet, GradeBand, LocaleCode } from '@/types';
-import { Difficulty } from '@/types';
+import { Difficulty, LocaleCode as LocaleCodeEnum } from '@/types';
 
 const WordEntrySchema = z.object({
   word: z.string().min(1),
@@ -17,7 +17,7 @@ const WordSetSchema = z.object({
   description: z.string(),
   words: z.array(WordEntrySchema),
   version: z.string(),
-  language: z.string(),
+  language: z.enum([LocaleCodeEnum.EN_US, LocaleCodeEnum.ES_ES, LocaleCodeEnum.FR_FR]),
 });
 
 /**
@@ -50,6 +50,6 @@ export class JsonDictionaryLoader implements IDictionaryLoader {
   }
 
   validate(data: unknown): WordSet {
-    return WordSetSchema.parse(data) as WordSet;
+    return WordSetSchema.parse(data);
   }
 }

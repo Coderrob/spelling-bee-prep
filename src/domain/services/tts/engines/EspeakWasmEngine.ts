@@ -221,16 +221,18 @@ export class EspeakWasmEngine implements ITtsEngine {
       throw new Error('AudioContext not available');
     }
 
+    const audioContext = this.audioContext;
+
     return new Promise((resolve, reject) => {
       try {
-        const source = this.audioContext!.createBufferSource();
+        const source = audioContext.createBufferSource();
         source.buffer = audioBuffer;
 
-        const gainNode = this.audioContext!.createGain();
+        const gainNode = audioContext.createGain();
         gainNode.gain.value = Math.max(0, Math.min(1, volume));
 
         source.connect(gainNode);
-        gainNode.connect(this.audioContext!.destination);
+        gainNode.connect(audioContext.destination);
 
         source.onended = () => {
           this.currentAudioSource = null;

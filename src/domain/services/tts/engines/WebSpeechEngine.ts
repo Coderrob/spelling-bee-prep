@@ -24,12 +24,12 @@ export class WebSpeechEngine implements ITtsEngine {
       return [];
     }
 
-    return this.waitForVoices();
+    return this.waitForVoices(this.synth);
   }
 
-  private waitForVoices(): Promise<SpeechSynthesisVoice[]> {
+  private waitForVoices(synth: SpeechSynthesis): Promise<SpeechSynthesisVoice[]> {
     return new Promise((resolve) => {
-      const voices = this.synth!.getVoices();
+      const voices = synth.getVoices();
 
       if (this.hasVoices(voices)) {
         resolve(voices);
@@ -37,7 +37,7 @@ export class WebSpeechEngine implements ITtsEngine {
       }
 
       const timeout = this.createVoiceTimeout(resolve);
-      this.addVoiceChangeListener(resolve, timeout);
+      this.addVoiceChangeListener(synth, resolve, timeout);
     });
   }
 
@@ -52,12 +52,13 @@ export class WebSpeechEngine implements ITtsEngine {
   }
 
   private addVoiceChangeListener(
+    synth: SpeechSynthesis,
     resolve: (voices: SpeechSynthesisVoice[]) => void,
     timeout: ReturnType<typeof setTimeout>
   ): void {
-    this.synth!.addEventListener('voiceschanged', () => {
+    synth.addEventListener('voiceschanged', () => {
       clearTimeout(timeout);
-      resolve(this.synth!.getVoices());
+      resolve(synth.getVoices());
     });
   }
 
@@ -67,14 +68,14 @@ export class WebSpeechEngine implements ITtsEngine {
     }
 
     this.cancel();
-    return this.createUtterancePromise(text, options);
+    return this.createUtterancePromise(this.synth, text, options);
   }
 
-  private createUtterancePromise(text: string, options: TtsOptions): Promise<void> {
+  private createUtterancePromise(synth: SpeechSynthesis, text: string, options: TtsOptions): Promise<void> {
     return new Promise((resolve, reject) => {
       const utterance = this.createUtterance(text, options);
       this.setUtteranceHandlers(utterance, resolve, reject);
-      this.synth!.speak(utterance);
+      synth.speak(utterance);
     });
   }
 

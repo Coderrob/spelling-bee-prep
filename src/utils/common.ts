@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+import { isNullOrUndefined } from './guards';
+
 /**
  * Checks if the code is running in a browser environment
  * @returns true if window is defined
  */
 export function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof window.document !== 'undefined';
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  return !isNullOrUndefined(window?.document);
 }
 
 /**

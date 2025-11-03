@@ -214,6 +214,15 @@ export function PracticePanel(): ReactElement {
   }, [nextWord, focusAnswerInput]);
 
   /**
+   * Submits the answer if user input has content.
+   */
+  const submitAnswer = useCallback((): void => {
+    if (hasContent(userInput)) {
+      checkAnswer();
+    }
+  }, [checkAnswer, userInput]);
+
+  /**
    * Handles form submission, verifying correctness and advancing flow as needed.
    *
    * @param event - Form submission event
@@ -227,11 +236,9 @@ export function PracticePanel(): ReactElement {
         return;
       }
 
-      if (hasContent(userInput)) {
-        checkAnswer();
-      }
+      submitAnswer();
     },
-    [checkAnswer, handleNextWord, isCorrect, userInput]
+    [handleNextWord, isCorrect, submitAnswer]
   );
 
   /**

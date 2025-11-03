@@ -178,8 +178,16 @@ export class EspeakWasmEngine implements ITtsEngine {
       return 'en-us';
     }
 
-    // Map common language codes to espeak voices
-    const langMap: Record<string, string> = {
+    const langMap = this.getLanguageMap();
+    return this.findMatchingVoice(lang, langMap);
+  }
+
+  /**
+   * Gets the mapping of language codes to espeak voices
+   * @returns Record mapping language codes to voice identifiers
+   */
+  private getLanguageMap(): Record<string, string> {
+    return {
       en: 'en-us',
       'en-us': 'en-us',
       'en-gb': 'en-gb',
@@ -191,8 +199,17 @@ export class EspeakWasmEngine implements ITtsEngine {
       it: 'it',
       pt: 'pt',
     };
+  }
 
+  /**
+   * Finds a matching voice for the given language code
+   * @param lang - The language code
+   * @param langMap - The language to voice mapping
+   * @returns The matched voice identifier
+   */
+  private findMatchingVoice(lang: string, langMap: Record<string, string>): string {
     const normalizedLang = lang.toLowerCase();
+
     if (langMap[normalizedLang]) {
       return langMap[normalizedLang];
     }
@@ -239,7 +256,8 @@ export class EspeakWasmEngine implements ITtsEngine {
     // Calculate duration based on phoneme count and rate
     const phonemeCount = phonemes.trim().split(/\s+/).length;
     const baseDuration = phonemeCount * 0.1; // Base: 100ms per phoneme
-    const duration = baseDuration / rate;
+    const safeRate = Math.max(0.1, rate); // Prevent division by zero
+    const duration = baseDuration / safeRate;
 
     const sampleRate = this.audioContext.sampleRate;
     const numSamples = Math.floor(duration * sampleRate);
@@ -280,14 +298,39 @@ export class EspeakWasmEngine implements ITtsEngine {
     const releaseSamples = releaseTime * sampleRate;
 
     if (sample < attackSamples) {
-      // Attack phase
-      return sample / attackSamples;
-    } else if (sample > totalSamples - releaseSamples) {
-      // Release phase
-      return (totalSamples - sample) / releaseSamples;
+      return this.calculateAttackPhase(sample, attackSamples);
     }
-    // Sustain phase
-    return 1;
+
+    if (sample > totalSamples - releaseSamples) {
+      return this.calculateReleasePhase(sample, totalSamples, releaseSamples);
+    }
+
+    return 1; // Sustain phase
+  }
+
+  /**
+   * Calculates the attack phase envelope value
+   * @param sample - Current sample index
+   * @param attackSamples - Total samples in attack phase
+   * @returns Amplitude multiplier for attack phase
+   */
+  private calculateAttackPhase(sample: number, attackSamples: number): number {
+    return sample / attackSamples;
+  }
+
+  /**
+   * Calculates the release phase envelope value
+   * @param sample - Current sample index
+   * @param totalSamples - Total number of samples
+   * @param releaseSamples - Total samples in release phase
+   * @returns Amplitude multiplier for release phase
+   */
+  private calculateReleasePhase(
+    sample: number,
+    totalSamples: number,
+    releaseSamples: number
+  ): number {
+    return (totalSamples - sample) / releaseSamples;
   }
 
   /**

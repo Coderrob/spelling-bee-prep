@@ -1,0 +1,30 @@
+import { useState } from 'react';
+import type { ReactElement } from 'react';
+import { AppShell } from '@/components/layout/AppShell';
+import { Settings } from '@/components/selectors/Settings';
+import { PracticePanel } from '@/features/practice/PracticePanel';
+import { ThemeProvider } from './providers/ThemeProvider';
+import { I18nProvider } from './providers/I18nProvider';
+
+export function App(): ReactElement {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const handleSettingsClick = (): void => {
+    setSettingsOpen(true);
+  };
+
+  const handleSettingsClose = (): void => {
+    setSettingsOpen(false);
+  };
+
+  return (
+    <ThemeProvider>
+      <I18nProvider>
+        <AppShell onSettingsClick={handleSettingsClick}>
+          <PracticePanel />
+          <Settings open={settingsOpen} onClose={handleSettingsClose} />
+        </AppShell>
+      </I18nProvider>
+    </ThemeProvider>
+  );
+}

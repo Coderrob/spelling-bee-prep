@@ -1,6 +1,7 @@
 import type { ITtsEngine, TtsOptions } from '@/types';
 import { hasAudioContextSupport, hasFetchSupport, wrapError } from '@/utils/common';
 import { isEmptyString, isNull } from '@/utils/guards';
+import { logger } from '@/utils/logger';
 
 interface OpenTtsVoice {
   id: string;
@@ -42,7 +43,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
       // Return empty array as OpenTTS uses its own voice system
       return [];
     } catch (error) {
-      console.error('Failed to fetch OpenTTS voices:', error);
+      logger.error('Failed to fetch OpenTTS voices', error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }

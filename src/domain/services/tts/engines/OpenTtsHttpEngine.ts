@@ -135,7 +135,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
 
   private normalizeRate(rate?: number): number {
     // OpenTTS typically accepts rates between 0.5 and 2.0
-    return Math.max(0.5, Math.min(2.0, rate || 1.0));
+    return Math.max(0.5, Math.min(2, rate || 1));
   }
 
   private normalizePitch(pitch?: number): number {

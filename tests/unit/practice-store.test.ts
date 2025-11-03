@@ -74,10 +74,9 @@ describe('Practice Store', () => {
   it('should filter words by difficulty', () => {
     const store = usePracticeStore.getState();
     store.setWordPool(mockWords);
-    store.setMode('difficulty');
-    store.setDifficulty('easy');
+    store.setDifficulties([Difficulty.EASY]);
     const word = store.getRandomWord();
-    expect(word?.difficulty).toBe('easy');
+    expect(word?.difficulty).toBe(Difficulty.EASY);
   });
 
   it('should toggle hint', () => {

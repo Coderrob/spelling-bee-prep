@@ -7,8 +7,8 @@
  */
 export function prepareTtsText(text: string): string {
   return text
-    .replace(/[.,!?;:]/g, ' ')
-    .replace(/\s+/g, ' ')
+    .replaceAll(/[.,!?;:]/g, ' ')
+    .replaceAll(/\s+/g, ' ')
     .trim();
 }
 

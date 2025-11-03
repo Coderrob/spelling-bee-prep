@@ -6,7 +6,7 @@ interface EmptyStateProps {
   onStart: () => void;
 }
 
-export function EmptyState({ onStart }: EmptyStateProps): ReactElement {
+export function EmptyState({ onStart }: Readonly<EmptyStateProps>): ReactElement {
   const { t } = useTranslation();
 
   return (

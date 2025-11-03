@@ -23,8 +23,8 @@ interface LogEntry {
 }
 
 class Logger {
-  private minLevel: LogLevel = LogLevel.INFO;
-  private isDevelopment: boolean;
+  private readonly minLevel: LogLevel = LogLevel.INFO;
+  private readonly isDevelopment: boolean;
 
   constructor() {
     this.isDevelopment = import.meta.env.DEV;

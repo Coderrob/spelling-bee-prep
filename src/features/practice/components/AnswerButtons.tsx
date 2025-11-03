@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { Box, Button } from '@mui/material';
+import { Stack, Button } from '@mui/material';
 import { Lightbulb } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { HintType } from '@/types';
@@ -9,11 +9,14 @@ interface AnswerButtonsProps {
   isSubmitDisabled: boolean;
 }
 
-export function AnswerButtons({ onHint, isSubmitDisabled }: AnswerButtonsProps): ReactElement {
+export function AnswerButtons({
+  onHint,
+  isSubmitDisabled,
+}: Readonly<AnswerButtonsProps>): ReactElement {
   const { t } = useTranslation();
 
   return (
-    <Box sx={{ display: 'flex', gap: 2 }}>
+    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ width: '100%' }}>
       <Button
         variant="outlined"
         startIcon={<Lightbulb />}
@@ -25,6 +28,6 @@ export function AnswerButtons({ onHint, isSubmitDisabled }: AnswerButtonsProps):
       <Button type="submit" variant="contained" fullWidth disabled={isSubmitDisabled}>
         {t('practice.submit')}
       </Button>
-    </Box>
+    </Stack>
   );
 }

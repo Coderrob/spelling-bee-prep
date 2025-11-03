@@ -22,21 +22,21 @@ interface SettingsProps {
   onClose: () => void;
 }
 
-export function Settings({ open, onClose }: SettingsProps): ReactElement {
+export function Settings({ open, onClose }: Readonly<SettingsProps>): ReactElement {
   const { t, i18n } = useTranslation();
   const { speechRate, speechVolume, setSpeechRate, setSpeechVolume } = useSettingsStore();
 
-  const handleRateChange = (_event: Event, value: number | number[]): void => {
+  function handleRateChange(_event: Event, value: number | number[]): void {
     if (isNumber(value)) {
       setSpeechRate(value);
     }
-  };
+  }
 
-  const handleVolumeChange = (_event: Event, value: number | number[]): void => {
+  function handleVolumeChange(_event: Event, value: number | number[]): void {
     if (isNumber(value)) {
       setSpeechVolume(value);
     }
-  };
+  }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>

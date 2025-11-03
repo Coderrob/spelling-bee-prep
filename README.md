@@ -1,183 +1,110 @@
-# 🐝 Spelling Bee Prep
+# Spelling Bee Prep
 
-A modern, interactive spelling practice application built with React 18, TypeScript, and Material UI. Practice spelling with text-to-speech pronunciation, multiple difficulty levels, and helpful hints.
+Practice spelling with confidence using a modern, accessible training companion built with React, TypeScript, and Material UI.
 
-## Features
+<p align="center">
+  <img src="public/img/spelling-bee.png" alt="Spelling Bee Practice UI" width="360">
+</p>
 
-### 🎯 Practice Modes
-- **Random Practice**: Practice words in random order
-- **Difficulty-Based**: Focus on easy, medium, or hard words
-- **Challenges**: Take on spelling challenges
+---
 
-### 🔊 Text-to-Speech
-- Web Speech API for natural word pronunciation
-- Automatic fallback for unsupported browsers
-- Adjustable speech rate and volume
+## Quick Start
 
-### 💡 Learning Aids
-- Word definitions
-- Usage examples
-- Word origins
-- Difficulty indicators
+1. **Install dependencies**
 
-### 📊 Progress Tracking
-- Real-time statistics
-- Current streak counter
-- Correct/incorrect tracking
+   ```bash
+   npm install
+   ```
 
-### 🌐 Internationalization
-- i18next integration
-- Multi-language support ready
+2. **Run the app locally**
 
-### 📱 Progressive Web App
-- Offline support
-- Installable on mobile devices
-- Service worker caching
+   ```bash
+   npm run dev
+   ```
 
-### 🔒 Security
-- OWASP security best practices
-- Content Security Policy
-- HTTP security headers
-- Input validation with Zod
+3. **Open** `http://localhost:5173` in your browser and start spelling.
 
-## Tech Stack
+Need a production build? Run `npm run build` followed by `npm run preview`.
 
-- **Frontend**: React 18, TypeScript
-- **Build Tool**: Vite
-- **UI Framework**: Material UI (MUI)
-- **Styling**: Emotion
-- **State Management**: Zustand
-- **Form Validation**: React Hook Form + Zod
+---
+
+## Highlights
+
+- Guided practice flows for random drills, filtered sessions, and challenges.
+- Text-to-speech playback with adjustable rate and volume controls.
+- On-demand hints covering definitions, usage examples, and word origins.
+- Real-time statistics and insights to monitor streaks, accuracy, and missed words.
+- Responsive, keyboard-friendly UI with internationalization support.
+- Progressive Web App features for offline use and installable experiences.
+
+---
+
+## UI Preview
+
+![Spelling Bee UI](public/img/spelling-bee-ui.png)
+
+The practice screen keeps the word input focused, offers quick hint toggles, and surfaces current streaks, accuracy, and charts in one glance.
+
+---
+
+## Tech Overview
+
+- **Framework**: React 18 + TypeScript
+- **UI**: Material UI (MUI) with Emotion styling
+- **State**: Zustand
+- **Forms & Validation**: React Hook Form + Zod
+- **Speech**: Web Speech API with fallbacks
+- **Charts**: Apache ECharts
+- **Tooling**: Vite, ESLint, Prettier
 - **Testing**: Vitest, React Testing Library, Playwright
-- **i18n**: react-i18next
 - **PWA**: vite-plugin-pwa
-- **Linting/Formatting**: ESLint, Prettier
 
-## Getting Started
+---
 
-### Prerequisites
-- Node.js 18+ and npm
+## Project Structure (abridged)
 
-### Installation
+| Path | Purpose |
+| --- | --- |
+| `public/` | Static assets and icons |
+| `src/app/` | Root providers and global configuration |
+| `src/components/` | Reusable UI elements |
+| `src/features/practice/` | Spelling practice flows, panels, and analytics |
+| `src/store/` | Zustand stores |
+| `src/domain/` | Domain logic and service abstractions |
+| `src/data/` | Dictionaries, loaders, and schemas |
+| `src/utils/` | Shared helpers and guards |
+| `tests/` | Unit and end-to-end test suites |
 
-```bash
-# Install dependencies
-npm install
+---
 
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-### Development Scripts
+## Helpful Scripts
 
 ```bash
-# Run unit tests
-npm test
-
-# Run tests with UI
-npm run test:ui
-
-# Run tests with coverage
-npm run test:coverage
-
-# Run E2E tests
-npm run test:e2e
-
-# Run E2E tests with UI
-npm run test:e2e:ui
-
-# Lint code
-npm run lint
-
-# Format code
-npm run format
-
-# Check formatting
-npm run format:check
+npm test             # Unit tests
+npm run test:ui      # Vitest UI
+npm run test:e2e     # Playwright E2E
+npm run lint         # ESLint
+npm run format       # Prettier
 ```
 
-## Project Structure
-
-```
-spelling-bee-prep/
-├── src/
-│   ├── app/                    # App configuration
-│   │   ├── i18n.ts            # Internationalization setup
-│   │   └── theme.ts           # Material UI theme
-│   ├── components/            # Reusable components
-│   │   └── Settings.tsx       # Settings dialog
-│   ├── features/              # Feature modules
-│   │   └── practice/          # Practice feature
-│   │       ├── ModeSelector.tsx
-│   │       ├── PracticeMode.tsx
-│   │       └── store.ts       # Zustand store
-│   ├── domain/                # Domain logic
-│   │   └── services/
-│   │       └── tts/           # Text-to-speech service
-│   │           ├── web-speech-service.ts
-│   │           ├── fallback-service.ts
-│   │           ├── types.ts
-│   │           └── index.ts
-│   ├── data/                  # Data layer
-│   │   └── dictionaries/      # Word dictionaries
-│   │       ├── schema.ts      # Zod schemas
-│   │       └── default-words.ts
-│   ├── App.tsx               # Main app component
-│   └── main.tsx              # App entry point
-├── tests/
-│   ├── unit/                 # Unit tests
-│   ├── e2e/                  # E2E tests
-│   └── setup.ts              # Test setup
-├── public/                   # Static assets
-└── ...config files
-
-```
-
-## Word Dictionary Format
-
-Words are validated using Zod schemas:
-
-```typescript
-{
-  word: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  definition: string;
-  usageExample?: string;
-  origin?: string;
-  phonetic?: string;
-  category?: string;
-}
-```
-
-## Browser Support
-
-- Modern browsers with ES2022 support
-- Web Speech API for TTS (with fallback)
-- Progressive Web App features
+---
 
 ## Security
 
-See [SECURITY.md](./SECURITY.md) for details on:
-- OWASP security measures
-- Content Security Policy
-- HTTP security headers
-- Input validation
-- Dependency management
+We follow OWASP-aligned practices, enforce CSP and security headers, and validate input with Zod. See [SECURITY.md](./SECURITY.md) for more detail.
+
+---
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
+1. Fork the repository.
+2. Create a branch (`git checkout -b feature/amazing-idea`).
+3. Commit your changes (`git commit -m "Add amazing idea"`).
+4. Run the tests and linters.
+5. Open a pull request.
+
+---
 
 ## License
 
-MIT
+Released under the MIT License. Happy spelling!

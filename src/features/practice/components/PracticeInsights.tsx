@@ -1,0 +1,230 @@
+import { useMemo } from 'react';
+import type { ReactElement } from 'react';
+import type { EChartsOption } from 'echarts';
+import { Box, Stack, Typography } from '@mui/material';
+import type { PracticeAttempt } from '@/types';
+import { Difficulty } from '@/types';
+import { InsightCard, formatDifficultyLabel } from './insights';
+
+interface PracticeInsightsProps {
+  history: PracticeAttempt[];
+}
+
+export function PracticeInsights({
+  history,
+}: Readonly<PracticeInsightsProps>): ReactElement | null {
+  const hasHistory = history.length > 0;
+
+  const sortedHistory = useMemo(() => {
+    if (!hasHistory) {
+      return [];
+    }
+
+    return [...history].sort((a, b) => a.timestamp - b.timestamp);
+  }, [hasHistory, history]);
+
+  const trendOption = useMemo<EChartsOption>(() => {
+    let correct = 0;
+    let incorrect = 0;
+
+    const attempts = sortedHistory.map((_attempt, index) => `Attempt ${index + 1}`);
+    const correctSeries = sortedHistory.map((attempt) => {
+      correct += attempt.correct ? 1 : 0;
+      return correct;
+    });
+    const incorrectSeries = sortedHistory.map((attempt) => {
+      incorrect += attempt.correct ? 0 : 1;
+      return incorrect;
+    });
+
+    return {
+      color: ['#2ecc71', '#e74c3c'],
+      tooltip: {
+        trigger: 'axis',
+      },
+      legend: {
+        data: ['Correct', 'Incorrect'],
+      },
+      grid: {
+        left: 40,
+        right: 20,
+        top: 40,
+        bottom: 40,
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: attempts,
+      },
+      yAxis: {
+        type: 'value',
+        minInterval: 1,
+        axisLabel: {
+          formatter: '{value}',
+        },
+      },
+      series: [
+        {
+          name: 'Correct',
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 8,
+          data: correctSeries,
+        },
+        {
+          name: 'Incorrect',
+          type: 'line',
+          smooth: true,
+          symbol: 'circle',
+          symbolSize: 8,
+          data: incorrectSeries,
+        },
+      ],
+    };
+  }, [sortedHistory]);
+
+  const difficultySummary = useMemo(() => {
+    const counts: Record<Difficulty, number> = {
+      [Difficulty.EASY]: 0,
+      [Difficulty.MEDIUM]: 0,
+      [Difficulty.HARD]: 0,
+    };
+
+    for (const attempt of sortedHistory) {
+      counts[attempt.difficulty] = (counts[attempt.difficulty] ?? 0) + 1;
+    }
+
+    return (Object.entries(counts) as [Difficulty, number][])
+      .filter(([, value]) => value > 0)
+      .map(([difficulty, value]) => ({
+        name: formatDifficultyLabel(difficulty),
+        value,
+      }));
+  }, [sortedHistory]);
+
+  const difficultyOption = useMemo<EChartsOption>(() => {
+    return {
+      tooltip: {
+        trigger: 'item',
+      },
+      legend: {
+        bottom: 0,
+      },
+      series: [
+        {
+          name: 'Attempts',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          center: ['50%', '45%'],
+          data: difficultySummary,
+          avoidLabelOverlap: false,
+          label: {
+            formatter: '{b}: {d}%',
+          },
+        },
+      ],
+    };
+  }, [difficultySummary]);
+
+  const topMisses = useMemo(() => {
+    const missCounts = new Map<string, number>();
+    for (const attempt of sortedHistory) {
+      if (attempt.correct) {
+        continue;
+      }
+      missCounts.set(attempt.word, (missCounts.get(attempt.word) ?? 0) + 1);
+    }
+
+    return Array.from(missCounts.entries())
+      .map(([word, count]) => ({ word, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }, [sortedHistory]);
+
+  const missesOption = useMemo<EChartsOption>(() => {
+    const words = topMisses.map((item) => item.word).reverse();
+    const values = topMisses.map((item) => item.count).reverse();
+
+    return {
+      color: ['#f97316'],
+      tooltip: {
+        trigger: 'axis',
+      },
+      grid: {
+        left: 140,
+        right: 24,
+        top: 16,
+        bottom: 32,
+      },
+      xAxis: {
+        type: 'value',
+        minInterval: 1,
+      },
+      yAxis: {
+        type: 'category',
+        data: words,
+        axisLabel: {
+          width: 120,
+          overflow: 'truncate',
+        },
+      },
+      series: [
+        {
+          name: 'Misses',
+          type: 'bar',
+          data: values,
+          barWidth: '55%',
+        },
+      ],
+    };
+  }, [topMisses]);
+
+  if (!hasHistory) {
+    return null;
+  }
+
+  return (
+    <Stack spacing={2.5}>
+      <Typography component="h2" variant="h5" sx={{ fontWeight: 700 }}>
+        Session Insights
+      </Typography>
+      <Box
+        sx={{
+          display: 'grid',
+          gap: { xs: 2, md: 3 },
+          gridTemplateColumns: { xs: '1fr', md: 'repeat(2, minmax(0, 1fr))' },
+        }}
+      >
+        <Box sx={{ gridColumn: { xs: 'auto', md: '1 / -1' } }}>
+          <InsightCard
+            title="Progress Over Time"
+            subtitle="Track how correct and incorrect answers evolve during your practice."
+            option={trendOption}
+            ariaLabel="Line chart showing cumulative correct and incorrect answers over time."
+          />
+        </Box>
+        <Box>
+          <InsightCard
+            title="Attempts by Difficulty"
+            subtitle="See which challenge levels you practice the most."
+            option={difficultyOption}
+            ariaLabel="Doughnut chart showing attempts grouped by difficulty level."
+            emptyMessage="Practice more words to unlock difficulty insights."
+            isEmpty={difficultySummary.length === 0}
+          />
+        </Box>
+        <Box>
+          <InsightCard
+            title="Top Missed Words"
+            subtitle="Focus on these to solidify your spelling."
+            option={missesOption}
+            ariaLabel="Bar chart of the words you miss most often."
+            emptyMessage="Great job! You have not missed any words enough times to show here."
+            isEmpty={topMisses.length === 0}
+          />
+        </Box>
+      </Box>
+    </Stack>
+  );
+}

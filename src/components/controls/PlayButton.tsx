@@ -12,7 +12,7 @@ export function PlayButton({
   onClick,
   disabled = false,
   size = 'large',
-}: PlayButtonProps): ReactElement {
+}: Readonly<PlayButtonProps>): ReactElement {
   return (
     <IconButton
       color="primary"

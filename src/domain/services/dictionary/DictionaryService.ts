@@ -8,7 +8,7 @@ import { getRandomItem } from '@/utils/random';
 export class DictionaryService implements IDictionaryService {
   private readonly loader: IDictionaryLoader;
   private readonly locale: LocaleCode;
-  private cache: Map<GradeBand, WordSet> = new Map();
+  private readonly cache: Map<GradeBand, WordSet> = new Map();
 
   constructor(loader: IDictionaryLoader, locale: LocaleCode = LocaleCode.EN_US) {
     this.loader = loader;

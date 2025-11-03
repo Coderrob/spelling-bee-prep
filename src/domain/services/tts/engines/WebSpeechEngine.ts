@@ -3,6 +3,8 @@ import { VOICE_LOAD_TIMEOUT_MS } from '@/types/constants';
 import { hasWebSpeechSupport } from '@/utils/common';
 import { isNull, hasElements } from '@/utils/guards';
 
+const DEFAULT_LOCALE = 'en-US';
+
 /**
  * Web Speech API TTS engine implementation
  */
@@ -11,7 +13,7 @@ export class WebSpeechEngine implements ITtsEngine {
 
   constructor() {
     if (hasWebSpeechSupport()) {
-      this.synth = window.speechSynthesis;
+      this.synth = globalThis.speechSynthesis;
     }
   }
 
@@ -85,7 +87,7 @@ export class WebSpeechEngine implements ITtsEngine {
 
   private createUtterance(text: string, options: TtsOptions): SpeechSynthesisUtterance {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = options.lang || 'en-US';
+    utterance.lang = options.lang || DEFAULT_LOCALE;
     utterance.rate = options.rate || 1;
     utterance.pitch = options.pitch || 1;
     utterance.volume = options.volume || 1;

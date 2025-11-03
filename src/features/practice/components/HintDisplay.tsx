@@ -8,7 +8,7 @@ interface HintDisplayProps {
   currentWord: WordEntry;
 }
 
-export function HintDisplay({ hintType, currentWord }: HintDisplayProps): ReactElement {
+export function HintDisplay({ hintType, currentWord }: Readonly<HintDisplayProps>): ReactElement {
   const { t } = useTranslation();
 
   const getHintContent = (): string => {

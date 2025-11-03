@@ -7,7 +7,7 @@ interface TopBarProps {
   onSettingsClick: () => void;
 }
 
-export function TopBar({ onSettingsClick }: TopBarProps): ReactElement {
+export function TopBar({ onSettingsClick }: Readonly<TopBarProps>): ReactElement {
   return (
     <AppBar position="static">
       <Toolbar>

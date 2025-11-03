@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type { ReactElement, Ref } from 'react';
 import { Alert, Button, Typography } from '@mui/material';
 import { NavigateNext } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
@@ -8,13 +8,15 @@ interface FeedbackDisplayProps {
   isCorrect: boolean;
   currentWord: WordEntry;
   onNext: () => void;
+  nextButtonRef?: Ref<HTMLButtonElement>;
 }
 
 export function FeedbackDisplay({
   isCorrect,
   currentWord,
   onNext,
-}: FeedbackDisplayProps): ReactElement {
+  nextButtonRef,
+}: Readonly<FeedbackDisplayProps>): ReactElement {
   const { t } = useTranslation();
 
   return (
@@ -30,7 +32,13 @@ export function FeedbackDisplay({
           {currentWord.definition}
         </Typography>
       </Alert>
-      <Button variant="contained" startIcon={<NavigateNext />} onClick={onNext} fullWidth>
+      <Button
+        variant="contained"
+        startIcon={<NavigateNext />}
+        onClick={onNext}
+        fullWidth
+        ref={nextButtonRef}
+      >
         {t('practice.nextWord')}
       </Button>
     </>

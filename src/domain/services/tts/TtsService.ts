@@ -4,6 +4,8 @@ import { WebSpeechEngine } from './engines/WebSpeechEngine';
 import { EspeakWasmEngine } from './engines/EspeakWasmEngine';
 import { OpenTtsHttpEngine } from './engines/OpenTtsHttpEngine';
 
+const DEFAULT_BASE_URL = 'http://localhost:5500';
+
 interface TtsServiceConfig {
   preferredEngine?: TtsEngine;
   openTtsBaseUrl?: string;
@@ -13,7 +15,7 @@ interface TtsServiceConfig {
  * TTS service facade that manages multiple TTS engines
  */
 export class TtsService implements ITtsService {
-  private engine: ITtsEngine;
+  private readonly engine: ITtsEngine;
   private readonly config: TtsServiceConfig;
 
   constructor(config: TtsServiceConfig = {}) {
@@ -27,7 +29,7 @@ export class TtsService implements ITtsService {
     }
 
     if (preferredEngine === TtsEngine.OPEN_TTS) {
-      const baseUrl = this.config.openTtsBaseUrl || 'http://localhost:5500';
+      const baseUrl = this.config.openTtsBaseUrl || DEFAULT_BASE_URL;
       return this.tryEngine(new OpenTtsHttpEngine(baseUrl));
     }
 
@@ -41,7 +43,7 @@ export class TtsService implements ITtsService {
     }
 
     // Try OpenTTS as fallback if WebSpeech is not available
-    const openTts = new OpenTtsHttpEngine(this.config.openTtsBaseUrl || 'http://localhost:5500');
+    const openTts = new OpenTtsHttpEngine(this.config.openTtsBaseUrl || DEFAULT_BASE_URL);
     if (openTts.isSupported()) {
       return openTts;
     }

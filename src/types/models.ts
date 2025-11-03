@@ -39,6 +39,16 @@ export interface PracticeStatistics {
 }
 
 /**
+ * Captures a single practice attempt for historical insights
+ */
+export interface PracticeAttempt {
+  word: string;
+  correct: boolean;
+  difficulty: Difficulty;
+  timestamp: number;
+}
+
+/**
  * TTS configuration options
  */
 export interface TtsOptions {

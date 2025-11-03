@@ -24,6 +24,6 @@ function getDifficultyColor(difficulty: Difficulty): ChipColor {
   return colorMap[difficulty];
 }
 
-export function CorrectnessChip({ difficulty }: CorrectnessChipProps): ReactElement {
+export function CorrectnessChip({ difficulty }: Readonly<CorrectnessChipProps>): ReactElement {
   return <Chip label={difficulty.toUpperCase()} color={getDifficultyColor(difficulty)} />;
 }

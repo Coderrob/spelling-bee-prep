@@ -9,14 +9,14 @@ export function normalize(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
+    .replaceAll(/[\u0300-\u036f]/g, '');
 }
 
 /**
  * Strips accents from a string
  */
 export function stripAccents(text: string): string {
-  return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return text.normalize('NFD').replaceAll(/[\u0300-\u036f]/g, '');
 }
 
 /**

@@ -260,9 +260,8 @@ export class EspeakWasmEngine implements ITtsEngine {
     const duration = baseDuration / safeRate;
 
     const sampleRate = this.audioContext.sampleRate;
-    const safeSampleRate = Math.max(1, sampleRate); // Prevent division by zero
-    const numSamples = Math.floor(duration * safeSampleRate);
-    const audioBuffer = this.audioContext.createBuffer(1, numSamples, safeSampleRate);
+    const numSamples = Math.floor(duration * sampleRate);
+    const audioBuffer = this.audioContext.createBuffer(1, numSamples, sampleRate);
     const channelData = audioBuffer.getChannelData(0);
 
     // Generate simple sine wave synthesis based on phonemes
@@ -271,10 +270,10 @@ export class EspeakWasmEngine implements ITtsEngine {
     let phase = 0;
 
     for (let i = 0; i < numSamples; i++) {
-      const t = i / safeSampleRate;
+      const t = i / sampleRate;
       // Add harmonics for more natural sound
       const frequency = baseFrequency * (1 + 0.1 * Math.sin(2 * Math.PI * 3 * t));
-      phase += (2 * Math.PI * frequency) / safeSampleRate;
+      phase += (2 * Math.PI * frequency) / sampleRate;
 
       // Generate waveform with envelope
       const envelope = this.calculateEnvelope(i, numSamples);
@@ -316,9 +315,6 @@ export class EspeakWasmEngine implements ITtsEngine {
    * @returns Amplitude multiplier for attack phase
    */
   private calculateAttackPhase(sample: number, attackSamples: number): number {
-    if (attackSamples === 0) {
-      return 1; // Return full amplitude if no attack phase
-    }
     return sample / attackSamples;
   }
 
@@ -334,9 +330,6 @@ export class EspeakWasmEngine implements ITtsEngine {
     totalSamples: number,
     releaseSamples: number
   ): number {
-    if (releaseSamples === 0) {
-      return 1; // Return full amplitude if no release phase
-    }
     return (totalSamples - sample) / releaseSamples;
   }
 

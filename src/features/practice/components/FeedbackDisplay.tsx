@@ -4,6 +4,9 @@ import { NavigateNext } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import type { WordEntry } from '@/types';
 
+/**
+ * Props for the FeedbackDisplay component.
+ */
 interface FeedbackDisplayProps {
   isCorrect: boolean;
   currentWord: WordEntry;
@@ -11,6 +14,21 @@ interface FeedbackDisplayProps {
   nextButtonRef?: Ref<HTMLButtonElement>;
 }
 
+/**
+ * Component to display feedback after a practice attempt.
+ *
+ * @param isCorrect - Indicates if the user's answer was correct.
+ * @param currentWord - The word entry that was just practiced.
+ * @param onNext - Callback function to proceed to the next word.
+ * @param nextButtonRef - Optional ref for the "Next Word" button.
+ * @returns A React element representing the feedback display.
+ * @example
+ * <FeedbackDisplay
+ *   isCorrect={true}
+ *   currentWord={{ word: 'example', definition: 'a representative form or pattern' }}
+ *   onNext={handleNextWord}
+ * />
+ */
 export function FeedbackDisplay({
   isCorrect,
   currentWord,

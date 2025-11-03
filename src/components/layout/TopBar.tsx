@@ -3,10 +3,21 @@ import { Settings as SettingsIcon } from '@mui/icons-material';
 import { APP_NAME, APP_EMOJI } from '@/types/constants';
 import type { ReactElement } from 'react';
 
+/**
+ * Props for the TopBar component.
+ */
 interface TopBarProps {
   onSettingsClick: () => void;
 }
 
+/**
+ * Component rendering the top bar of the application.
+ *
+ * @param onSettingsClick - Callback function to handle settings button click.
+ * @returns A React element representing the top bar.
+ * @example
+ * <TopBar onSettingsClick={handleSettingsClick} />
+ */
 export function TopBar({ onSettingsClick }: Readonly<TopBarProps>): ReactElement {
   return (
     <AppBar position="static">

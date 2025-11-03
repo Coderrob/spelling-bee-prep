@@ -6,6 +6,7 @@ import {
   DEFAULT_SPEECH_PITCH,
 } from '@/types/constants';
 
+/** State interface for application settings. */
 interface SettingsState {
   locale: LocaleCode;
   speechRate: number;
@@ -13,6 +14,7 @@ interface SettingsState {
   speechPitch: number;
 }
 
+/** Actions interface for modifying application settings. */
 interface SettingsActions {
   setLocale: (locale: LocaleCode) => void;
   setSpeechRate: (rate: number) => void;
@@ -20,8 +22,10 @@ interface SettingsActions {
   setSpeechPitch: (pitch: number) => void;
 }
 
+/** Combined type representing the full settings store. */
 type SettingsStore = SettingsState & SettingsActions;
 
+/** Zustand store for managing application settings such as locale and TTS parameters. */
 export const useSettingsStore = create<SettingsStore>((set) => ({
   locale: LocaleCode.EN_US,
   speechRate: DEFAULT_SPEECH_RATE,

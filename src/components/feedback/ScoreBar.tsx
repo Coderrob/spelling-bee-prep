@@ -1,11 +1,24 @@
-import { Paper, Stack, Typography } from '@mui/material';
+import { Paper, Stack } from '@mui/material';
 import type { PracticeStatistics } from '@/types';
 import type { ReactElement } from 'react';
+import { Stat } from './Stat';
 
+/** Props for the ScoreBar component. */
 interface ScoreBarProps {
   statistics: PracticeStatistics;
 }
 
+/**
+ * Displays top-line practice statistics in a responsive row.
+ *
+ * @param props - Component props
+ * @param props.statistics - Aggregated practice statistics to render
+ * @returns Material UI paper summarizing current performance
+ * @example
+ * ```tsx
+ * <ScoreBar statistics={practiceStatistics} />
+ * ```
+ */
 export function ScoreBar({ statistics }: Readonly<ScoreBarProps>): ReactElement {
   return (
     <Paper
@@ -32,28 +45,5 @@ export function ScoreBar({ statistics }: Readonly<ScoreBarProps>): ReactElement 
         <Stat label="Current streak" value={statistics.currentStreak} />
       </Stack>
     </Paper>
-  );
-}
-
-interface StatProps {
-  label: string;
-  value: number | string;
-  color?: string;
-}
-
-function Stat({ label, value, color }: Readonly<StatProps>): ReactElement {
-  return (
-    <Stack spacing={0.25}>
-      <Typography variant="caption" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography
-        variant="h6"
-        component="p"
-        sx={{ fontWeight: 600, color: color || 'text.primary' }}
-      >
-        {value}
-      </Typography>
-    </Stack>
   );
 }

@@ -6,16 +6,29 @@ import { PracticePanel } from '@/features/practice/PracticePanel';
 import { ThemeProvider } from './providers/ThemeProvider';
 import { I18nProvider } from './providers/I18nProvider';
 
+/**
+ * The main application component that sets up the overall structure and state management.
+ *
+ * @returns A React element representing the application.
+ * @example
+ * <App />
+ */
 export function App(): ReactElement {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const handleSettingsClick = (): void => {
+  /**
+   * Handles the click event for opening the settings dialog.
+   */
+  function handleSettingsClick(): void {
     setSettingsOpen(true);
-  };
+  }
 
-  const handleSettingsClose = (): void => {
+  /**
+   * Handles the close event for the settings dialog.
+   */
+  function handleSettingsClose(): void {
     setSettingsOpen(false);
-  };
+  }
 
   return (
     <ThemeProvider>

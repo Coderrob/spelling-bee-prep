@@ -17,21 +17,43 @@ import { MIN_SPEECH_RATE, MAX_SPEECH_RATE, MIN_VOLUME, MAX_VOLUME } from '@/type
 import { isNumber } from '@/utils/guards';
 import type { ReactElement } from 'react';
 
+/**
+ * Props for the Settings component.
+ */
 interface SettingsProps {
   open: boolean;
   onClose: () => void;
 }
 
+/**
+ * Component rendering the settings dialog for adjusting application preferences.
+ *
+ * @param open - Indicates if the settings dialog is open.
+ * @param onClose - Callback function to close the settings dialog.
+ * @returns A React element representing the settings dialog.
+ * @example
+ * <Settings open={isSettingsOpen} onClose={handleCloseSettings} />
+ */
 export function Settings({ open, onClose }: Readonly<SettingsProps>): ReactElement {
   const { t, i18n } = useTranslation();
   const { speechRate, speechVolume, setSpeechRate, setSpeechVolume } = useSettingsStore();
 
+  /**
+   * Handles changes to the speech rate slider.
+   * @param _event - The event object (not used).
+   * @param value - The new rate value from the slider.
+   */
   function handleRateChange(_event: Event, value: number | number[]): void {
     if (isNumber(value)) {
       setSpeechRate(value);
     }
   }
 
+  /**
+   * Handles changes to the speech volume slider.
+   * @param _event - The event object (not used).
+   * @param value - The new volume value from the slider.
+   */
   function handleVolumeChange(_event: Event, value: number | number[]): void {
     if (isNumber(value)) {
       setSpeechVolume(value);

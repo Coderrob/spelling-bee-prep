@@ -5,6 +5,11 @@ import { isBrowser } from '@/utils/common';
 const STORAGE_KEY = 'spelling-bee:practice-history';
 export const MAX_HISTORY_ENTRIES = 1000;
 
+/**
+ * Loads all persisted practice attempts from local storage.
+ *
+ * @returns Ordered list of practice attempts or an empty array when unavailable
+ */
 export function loadPracticeHistory(): PracticeAttempt[] {
   const storage = getStorage();
   if (!storage) {
@@ -30,6 +35,12 @@ export function loadPracticeHistory(): PracticeAttempt[] {
   }
 }
 
+/**
+ * Appends a new attempt to the persisted history and returns the updated list.
+ *
+ * @param attempt - Attempt metadata to store
+ * @returns Trimmed list of attempts capped at {@link MAX_HISTORY_ENTRIES}
+ */
 export function appendPracticeAttempt(attempt: PracticeAttempt): PracticeAttempt[] {
   const storage = getStorage();
   if (!storage) {
@@ -42,6 +53,9 @@ export function appendPracticeAttempt(attempt: PracticeAttempt): PracticeAttempt
   return trimmed;
 }
 
+/**
+ * Removes all stored practice history from local storage.
+ */
 export function clearPracticeHistory(): void {
   const storage = getStorage();
   if (!storage) {
@@ -51,6 +65,12 @@ export function clearPracticeHistory(): void {
   storage.removeItem(STORAGE_KEY);
 }
 
+/**
+ * Persists practice history to storage while handling quota or availability failures gracefully.
+ *
+ * @param history - Attempts to persist
+ * @param storage - Storage instance to update
+ */
 function persistHistory(history: PracticeAttempt[], storage: Storage): void {
   try {
     storage.setItem(STORAGE_KEY, JSON.stringify(history));
@@ -59,6 +79,12 @@ function persistHistory(history: PracticeAttempt[], storage: Storage): void {
   }
 }
 
+/**
+ * Runtime guard verifying an object conforms to {@link PracticeAttempt}.
+ *
+ * @param candidate - Unknown value to validate
+ * @returns `true` when the candidate represents a valid practice attempt
+ */
 function isValidAttempt(candidate: unknown): candidate is PracticeAttempt {
   if (!isObject(candidate)) {
     return false;
@@ -74,6 +100,11 @@ function isValidAttempt(candidate: unknown): candidate is PracticeAttempt {
   );
 }
 
+/**
+ * Returns the browser storage instance when available.
+ *
+ * @returns Local storage instance or `null` when inaccessible
+ */
 function getStorage(): Storage | null {
   if (!isBrowser()) {
     return null;

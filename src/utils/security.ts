@@ -6,6 +6,9 @@ import { MAX_INPUT_LENGTH } from '@/types/constants';
 
 /**
  * Validates input length to prevent DoS attacks
+ * @param input - The user input string
+ * @param maxLength - Maximum allowed length
+ * @returns True if input length is valid, false otherwise
  */
 export function validateInputLength(input: string, maxLength = MAX_INPUT_LENGTH): boolean {
   return input.length <= maxLength;
@@ -13,6 +16,8 @@ export function validateInputLength(input: string, maxLength = MAX_INPUT_LENGTH)
 
 /**
  * Validates that input contains only allowed characters (letters, spaces, hyphens)
+ * @param input - The user input string
+ * @returns True if input is valid, false otherwise
  */
 export function validateCharset(input: string): boolean {
   const allowedPattern = /^[a-zA-Z\s-]+$/;
@@ -21,6 +26,8 @@ export function validateCharset(input: string): boolean {
 
 /**
  * Sanitizes user input
+ * @param input - The user input string
+ * @returns Sanitized input string
  */
 export function sanitizeInput(input: string): string {
   if (!validateInputLength(input)) {

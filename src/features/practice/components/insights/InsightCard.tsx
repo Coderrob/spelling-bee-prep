@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import type { EChartsOption } from 'echarts';
 import { InsightChart } from './InsightChart';
 
+/** Props for the InsightCard component. */
 interface InsightCardProps {
   title: string;
   subtitle: string;
@@ -13,6 +14,21 @@ interface InsightCardProps {
   height?: number;
 }
 
+/**
+ * Card wrapper that renders an insight chart or an empty message when data is unavailable.
+ *
+ * @param props - Component props
+ * @returns Card element ready for dashboard grids
+ * @example
+ * ```tsx
+ * <InsightCard
+ *   title="Practice Trends"
+ *   subtitle="Your performance over time"
+ *   option={chartOption}
+ *   ariaLabel="Line chart showing practice trends"
+ * />
+ * ```
+ */
 export function InsightCard({
   title,
   subtitle,

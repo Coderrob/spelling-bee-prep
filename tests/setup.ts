@@ -29,6 +29,9 @@ global.speechSynthesis = {
   dispatchEvent: () => false,
 } as unknown as SpeechSynthesis;
 
+/**
+ * Mock SpeechSynthesisUtterance class
+ */
 global.SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
   text = '';
   lang = '';

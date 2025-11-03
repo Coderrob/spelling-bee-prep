@@ -5,6 +5,8 @@
 export const APP_NAME = 'Spelling Bee Prep';
 export const APP_EMOJI = '🐝';
 
+export const DEFAULT_BASE_URL = 'http://localhost:5500';
+
 export const DEFAULT_SPEECH_RATE = 1;
 export const DEFAULT_SPEECH_VOLUME = 1;
 export const DEFAULT_SPEECH_PITCH = 1;

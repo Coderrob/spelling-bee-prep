@@ -2,13 +2,14 @@ import { normalize } from '@/utils/strings';
 
 /**
  * Calculates Levenshtein distance between two strings
+ * @param str1 - First string
+ * @param str2 - Second string
+ * @returns The Levenshtein distance between the two strings
  */
 export function levenshteinDistance(str1: string, str2: string): number {
   const len1 = str1.length;
   const len2 = str2.length;
-  const matrix: number[][] = Array(len1 + 1)
-    .fill(null)
-    .map(() => Array(len2 + 1).fill(0));
+  const matrix: number[][] = new Array(len1 + 1).fill(null).map(() => new Array(len2 + 1).fill(0));
 
   for (let i = 0; i <= len1; i++) {
     matrix[i][0] = i;
@@ -34,6 +35,9 @@ export function levenshteinDistance(str1: string, str2: string): number {
 
 /**
  * Compares two words with normalization and accent handling
+ * @param word1 - First word to compare
+ * @param word2 - Second word to compare
+ * @returns True if words are equivalent after normalization, false otherwise
  */
 export function compareWords(word1: string, word2: string): boolean {
   const normalized1 = normalize(word1);
@@ -43,6 +47,12 @@ export function compareWords(word1: string, word2: string): boolean {
 
 /**
  * Checks if answer is close enough (within threshold)
+ * to the correct answer using Levenshtein distance.
+ *
+ * @param answer - The user's answer
+ * @param correct - The correct answer
+ * @param threshold - Maximum allowed distance to be considered a close match
+ * @returns True if the answer is a close match, false otherwise
  */
 export function isCloseMatch(answer: string, correct: string, threshold = 2): boolean {
   const distance = levenshteinDistance(normalize(answer), normalize(correct));

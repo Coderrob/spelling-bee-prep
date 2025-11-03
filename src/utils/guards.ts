@@ -1,6 +1,5 @@
 /**
  * Type guard utilities for common type checks
- * Reduces cognitive load by providing named checks instead of inline typeof/instanceof
  */
 
 /**

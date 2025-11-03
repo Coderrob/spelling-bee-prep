@@ -5,12 +5,30 @@ import type { EChartsType, EChartsOption } from 'echarts';
 import { Box } from '@mui/material';
 import { isBrowser } from '@/utils/common';
 
+/** Props for the InsightChart component. */
 interface InsightChartProps {
   option: EChartsOption;
   ariaLabel: string;
   height?: number;
 }
 
+/**
+ * Responsive ECharts renderer used by insight cards.
+ *
+ * @param props - Component props
+ * @param props.option - Fully constructed ECharts option object
+ * @param props.ariaLabel - Accessible label describing the chart contents
+ * @param props.height - Optional fixed height for the chart container
+ * @returns A box element hosting the rendered chart
+ * @example
+ * ```tsx
+ * <InsightChart
+ *   option={chartOption}
+ *   ariaLabel="Line chart showing practice trends"
+ *   height={300}
+ * />
+ * ```
+ */
 export function InsightChart({
   option,
   ariaLabel,

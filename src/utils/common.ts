@@ -8,7 +8,7 @@
  * @returns true if window is defined
  */
 export function isBrowser(): boolean {
-  return typeof globalThis !== 'undefined';
+  return typeof window !== 'undefined' && typeof window.document !== 'undefined';
 }
 
 /**
@@ -16,7 +16,7 @@ export function isBrowser(): boolean {
  * @returns true if speechSynthesis is available
  */
 export function hasWebSpeechSupport(): boolean {
-  return isBrowser() && 'speechSynthesis' in globalThis;
+  return isBrowser() && 'speechSynthesis' in window;
 }
 
 /**
@@ -24,7 +24,7 @@ export function hasWebSpeechSupport(): boolean {
  * @returns true if AudioContext is available
  */
 export function hasAudioContextSupport(): boolean {
-  return isBrowser() && 'AudioContext' in globalThis;
+  return isBrowser() && 'AudioContext' in window;
 }
 
 /**
@@ -32,7 +32,7 @@ export function hasAudioContextSupport(): boolean {
  * @returns true if WebAssembly is available
  */
 export function hasWebAssemblySupport(): boolean {
-  return isBrowser() && 'WebAssembly' in globalThis;
+  return isBrowser() && 'WebAssembly' in window;
 }
 
 /**
@@ -40,7 +40,7 @@ export function hasWebAssemblySupport(): boolean {
  * @returns true if fetch is available
  */
 export function hasFetchSupport(): boolean {
-  return isBrowser() && 'fetch' in globalThis;
+  return isBrowser() && 'fetch' in window;
 }
 
 /**

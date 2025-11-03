@@ -6,15 +6,31 @@ import type { PracticeAttempt } from '@/types';
 import { Difficulty } from '@/types';
 import { InsightCard, formatDifficultyLabel } from './insights';
 
+/**
+ * Props for the PracticeInsights component.
+ */
 interface PracticeInsightsProps {
   history: PracticeAttempt[];
 }
 
+/**
+ * Displays analytical charts summarizing recent spelling attempts.
+ *
+ * @param props - Component props
+ * @param props.history - Ordered list of practice attempts to visualize
+ * @returns Stack of insight cards or `null` when no history exists
+ *
+ * @example
+ * ```tsx
+ * <PracticeInsights history={practiceHistory} />
+ * ```
+ */
 export function PracticeInsights({
   history,
 }: Readonly<PracticeInsightsProps>): ReactElement | null {
   const hasHistory = history.length > 0;
 
+  /** Sorted practice history by timestamp ascending. */
   const sortedHistory = useMemo(() => {
     if (!hasHistory) {
       return [];
@@ -23,6 +39,7 @@ export function PracticeInsights({
     return [...history].sort((a, b) => a.timestamp - b.timestamp);
   }, [hasHistory, history]);
 
+  /** ECharts option for the trend line chart. */
   const trendOption = useMemo<EChartsOption>(() => {
     let correct = 0;
     let incorrect = 0;
@@ -84,6 +101,7 @@ export function PracticeInsights({
     };
   }, [sortedHistory]);
 
+  /** Summary of attempts grouped by difficulty level. */
   const difficultySummary = useMemo(() => {
     const counts: Record<Difficulty, number> = {
       [Difficulty.EASY]: 0,
@@ -92,7 +110,7 @@ export function PracticeInsights({
     };
 
     for (const attempt of sortedHistory) {
-      counts[attempt.difficulty] = (counts[attempt.difficulty] ?? 0) + 1;
+      counts[attempt.difficulty] += 1;
     }
 
     return (Object.entries(counts) as [Difficulty, number][])
@@ -103,6 +121,7 @@ export function PracticeInsights({
       }));
   }, [sortedHistory]);
 
+  /** ECharts option for the difficulty doughnut chart. */
   const difficultyOption = useMemo<EChartsOption>(() => {
     return {
       tooltip: {
@@ -127,6 +146,7 @@ export function PracticeInsights({
     };
   }, [difficultySummary]);
 
+  /** Top missed words sorted by miss count descending. */
   const topMisses = useMemo(() => {
     const missCounts = new Map<string, number>();
     for (const attempt of sortedHistory) {
@@ -142,6 +162,7 @@ export function PracticeInsights({
       .slice(0, 10);
   }, [sortedHistory]);
 
+  /** ECharts option for the top misses bar chart. */
   const missesOption = useMemo<EChartsOption>(() => {
     const words = topMisses.map((item) => item.word).reverse();
     const values = topMisses.map((item) => item.count).reverse();

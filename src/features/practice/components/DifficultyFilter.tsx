@@ -18,20 +18,32 @@ import { formatDifficultyLabel } from './insights';
 const DIFFICULTY_OPTIONS: Difficulty[] = [Difficulty.EASY, Difficulty.MEDIUM, Difficulty.HARD];
 const SELECT_ID = 'practice-difficulty-filter';
 
+/**
+ * Multi-select control that allows learners to restrict practice to specific difficulty levels.
+ *
+ * @returns Form control containing the difficulty selector
+ * @example
+ * <DifficultyFilter />
+ */
 export function DifficultyFilter(): ReactElement {
   const { t } = useTranslation();
 
   const selectedDifficulties = usePracticeStore((state) => state.selectedDifficulties);
   const setDifficulties = usePracticeStore((state) => state.setDifficulties);
 
-  const handleChange = (event: SelectChangeEvent<string[]>): void => {
+  /**
+   * Updates the store with the newly selected difficulty filters.
+   *
+   * @param event - Selection change event from the MUI select component
+   */
+  function handleChange(event: SelectChangeEvent<string[]>): void {
     const value = event.target.value;
     const nextSelection = Array.isArray(value)
       ? (value as Difficulty[])
       : (value.split(',').filter(Boolean) as Difficulty[]);
 
     setDifficulties(nextSelection);
-  };
+  }
 
   const label = t('practice.filters.difficulty', 'Filter by difficulty');
 
@@ -47,7 +59,7 @@ export function DifficultyFilter(): ReactElement {
         label={label}
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {(selected as Difficulty[]).map((difficulty) => (
+            {selected.map((difficulty) => (
               <Chip key={difficulty} label={formatDifficultyLabel(difficulty)} size="small" />
             ))}
           </Box>

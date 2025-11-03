@@ -11,6 +11,22 @@ interface AnswerFieldProps {
   autoFocus?: boolean;
 }
 
+/**
+ * Controlled text input that sanitizes user spelling attempts before forwarding them to state.
+ *
+ * @param props - Component props
+ * @param props.value - Current text value
+ * @param props.onChange - Change handler invoked with sanitized value
+ * @param props.disabled - Disables editing when true
+ * @param props.label - Accessible label for the input
+ * @param props.autoFocus - Auto-focus flag forwarded to the underlying field
+ * @returns Material UI text field configured for spelling inputs
+ *
+ * @example
+ * ```tsx
+ * <AnswerField value={attempt} onChange={setAttempt} />
+ * ```
+ */
 export const AnswerField = forwardRef<HTMLInputElement, AnswerFieldProps>(
   (
     {
@@ -22,6 +38,11 @@ export const AnswerField = forwardRef<HTMLInputElement, AnswerFieldProps>(
     }: AnswerFieldProps,
     ref
   ): ReactElement => {
+    /**
+     * Sanitizes user input to prevent unsafe characters before updating state.
+     *
+     * @param event - Change event emitted by the text field
+     */
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
       const sanitized = sanitizeInput(event.target.value);
       onChange(sanitized);

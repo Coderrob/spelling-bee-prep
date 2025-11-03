@@ -21,6 +21,9 @@ import {
   DifficultyFilter,
 } from './components';
 
+/**
+ * Lazy-loaded practice insights component.
+ */
 const PracticeInsights = lazy(async () => {
   const module = await import('./components/PracticeInsights');
   return { default: module.PracticeInsights };
@@ -28,6 +31,11 @@ const PracticeInsights = lazy(async () => {
 
 const ttsService = new TtsService();
 
+/**
+ * Lightweight placeholder rendered while the insights bundle loads.
+ *
+ * @returns Skeleton card explaining that insights are loading
+ */
 function InsightsFallback(): ReactElement {
   return (
     <Card elevation={2}>
@@ -45,6 +53,11 @@ function InsightsFallback(): ReactElement {
   );
 }
 
+/**
+ * Renders the primary spelling practice workflow including playback, input, hints, and analytics.
+ *
+ * @returns Fully composed practice experience
+ */
 export function PracticePanel(): ReactElement {
   const {
     currentWord,
@@ -135,6 +148,9 @@ export function PracticePanel(): ReactElement {
     });
   }, [isCorrect]);
 
+  /**
+   * Focuses and selects the answer input, deferring to the next animation frame for smooth UX.
+   */
   const focusAnswerInput = useCallback(() => {
     if (!isBrowser()) {
       return;
@@ -154,6 +170,9 @@ export function PracticePanel(): ReactElement {
     }
   }, [isCorrect, focusAnswerInput]);
 
+  /**
+   * Plays the current word using the configured text-to-speech engine.
+   */
   const handleSpeak = useCallback(async () => {
     if (!currentWord) {
       return;
@@ -169,28 +188,42 @@ export function PracticePanel(): ReactElement {
     }
   }, [currentWord, speechRate, speechVolume]);
 
+  /**
+   * Advances to the next word and re-focuses the answer input.
+   */
   const handleNextWord = useCallback(() => {
     nextWord();
     focusAnswerInput();
   }, [nextWord, focusAnswerInput]);
 
-  function handleSubmit(event: React.FormEvent): void {
-    event.preventDefault();
+  /**
+   * Handles form submission, verifying correctness and advancing flow as needed.
+   *
+   * @param event - Form submission event
+   */
+  const handleSubmit = useCallback(
+    (event: React.FormEvent): void => {
+      event.preventDefault();
 
-    if (isCorrect !== null) {
-      handleNextWord();
-      return;
-    }
+      if (isCorrect !== null) {
+        handleNextWord();
+        return;
+      }
 
-    if (hasContent(userInput)) {
-      checkAnswer();
-    }
-  }
+      if (hasContent(userInput)) {
+        checkAnswer();
+      }
+    },
+    [checkAnswer, handleNextWord, isCorrect, userInput]
+  );
 
-  const handleReset = (): void => {
+  /**
+   * Clears current progress and loads a fresh word to restart the session.
+   */
+  const handleReset = useCallback((): void => {
     resetSession();
     handleNextWord();
-  };
+  }, [handleNextWord, resetSession]);
 
   if (!currentWord) {
     return (

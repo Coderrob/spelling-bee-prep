@@ -176,33 +176,7 @@ export const usePracticeStore = create<PracticeStore>((set, get) => ({
    * @param difficulties - Ordered collection of allowed difficulty levels
    */
   setDifficulties: (difficulties) => {
-    set((state) => {
-      const nextSelected = difficulties;
-      const baseState: PracticeState = {
-        ...state,
-        selectedDifficulties: nextSelected,
-        usedWords: new Set(),
-      };
-
-      const requiresNewWord =
-        !state.currentWord ||
-        (nextSelected.length > 0 && !nextSelected.includes(state.currentWord.difficulty));
-
-      if (!requiresNewWord) {
-        return {
-          selectedDifficulties: nextSelected,
-          usedWords: baseState.usedWords,
-        };
-      }
-
-      const { word, usedWords } = selectNextWord(baseState);
-
-      return {
-        selectedDifficulties: nextSelected,
-        usedWords,
-        currentWord: word,
-      };
-    });
+    set((state) => applyDifficultyFilter(state, difficulties));
   },
 
   /**
@@ -338,6 +312,58 @@ function markWordAsUsed(
 }
 
 /**
+ * Applies difficulty filter updates and selects a new word if needed.
+ *
+ * @param state - Current practice state
+ * @param difficulties - New difficulty filters to apply
+ * @returns Updated state with new difficulty filters and word if needed
+ */
+function applyDifficultyFilter(
+  state: PracticeState,
+  difficulties: Difficulty[]
+): Partial<PracticeStore> {
+  const baseState: PracticeState = {
+    ...state,
+    selectedDifficulties: difficulties,
+    usedWords: new Set(),
+  };
+
+  if (shouldKeepCurrentWord(state, difficulties)) {
+    return {
+      selectedDifficulties: difficulties,
+      usedWords: baseState.usedWords,
+    };
+  }
+
+  const { word, usedWords } = selectNextWord(baseState);
+
+  return {
+    selectedDifficulties: difficulties,
+    usedWords,
+    currentWord: word,
+  };
+}
+
+/**
+ * Determines if the current word should be kept with new difficulty filters.
+ *
+ * @param state - Current practice state
+ * @param difficulties - New difficulty filters
+ * @returns True if current word matches new filters
+ */
+function shouldKeepCurrentWord(state: PracticeState, difficulties: Difficulty[]): boolean {
+  if (!state.currentWord) {
+    return false;
+  }
+
+  if (difficulties.length === 0) {
+    return true;
+  }
+
+  return difficulties.includes(state.currentWord.difficulty);
+}
+
+/**
  * Filters the word pool by usage and active difficulty filters.
  *
  * @param state - Current practice state
@@ -399,13 +425,26 @@ function selectNextWord(state: PracticeState): { word: WordEntry | null; usedWor
   const availableWords = getAvailableWords(state);
 
   if (isPoolExhausted(availableWords)) {
-    const resetUsedWords = new Set<string>();
-    const resetState: PracticeState = { ...state, usedWords: resetUsedWords };
-    const nextWord = getRandomFromPool(state.wordPool, resetState);
-    return { word: nextWord, usedWords: resetUsedWords };
+    return selectWordAfterReset(state);
   }
 
   return { word: getRandomFromPool(availableWords, state), usedWords: state.usedWords };
+}
+
+/**
+ * Resets the used words pool and selects a random word from the full pool.
+ *
+ * @param state - Current practice state snapshot
+ * @returns Tuple containing the chosen word and the empty used-word set
+ */
+function selectWordAfterReset(state: PracticeState): {
+  word: WordEntry | null;
+  usedWords: Set<string>;
+} {
+  const resetUsedWords = new Set<string>();
+  const resetState: PracticeState = { ...state, usedWords: resetUsedWords };
+  const nextWord = getRandomFromPool(state.wordPool, resetState);
+  return { word: nextWord, usedWords: resetUsedWords };
 }
 
 /**

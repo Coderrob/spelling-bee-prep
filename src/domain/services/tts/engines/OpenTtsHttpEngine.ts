@@ -43,7 +43,10 @@ export class OpenTtsHttpEngine implements ITtsEngine {
       // Return empty array as OpenTTS uses its own voice system
       return [];
     } catch (error) {
-      logger.error('Failed to fetch OpenTTS voices', error instanceof Error ? error : new Error(String(error)));
+      logger.error(
+        'Failed to fetch OpenTTS voices',
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }

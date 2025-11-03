@@ -39,11 +39,7 @@ class Logger {
   }
 
   private formatLogEntry(entry: LogEntry): string {
-    const parts = [
-      `[${entry.timestamp}]`,
-      `[${entry.level}]`,
-      entry.message,
-    ];
+    const parts = [`[${entry.timestamp}]`, `[${entry.level}]`, entry.message];
 
     if (entry.context && Object.keys(entry.context).length > 0) {
       parts.push(JSON.stringify(entry.context));

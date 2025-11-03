@@ -71,7 +71,11 @@ export class WebSpeechEngine implements ITtsEngine {
     return this.createUtterancePromise(this.synth, text, options);
   }
 
-  private createUtterancePromise(synth: SpeechSynthesis, text: string, options: TtsOptions): Promise<void> {
+  private createUtterancePromise(
+    synth: SpeechSynthesis,
+    text: string,
+    options: TtsOptions
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const utterance = this.createUtterance(text, options);
       this.setUtteranceHandlers(utterance, resolve, reject);

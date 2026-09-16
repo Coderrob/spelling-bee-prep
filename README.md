@@ -12,7 +12,7 @@ Help your child master spelling with an interactive, voice-enabled practice app!
 
 ### What You Need
 
-- A computer with [Node.js](https://nodejs.org/) installed (download the LTS version)
+- A computer with [Node.js 24 or newer](https://nodejs.org/) installed
 - A web browser (Chrome, Firefox, Edge, or Safari)
 - About 5 minutes to set up
 

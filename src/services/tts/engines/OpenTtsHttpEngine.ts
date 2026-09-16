@@ -39,6 +39,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
   private readonly audioContext: AudioContext | null = null;
   private currentAudioSource: AudioBufferSourceNode | null = null;
   private availableVoices: OpenTtsVoice[] = [];
+  private requestController: AbortController | null = null;
 
   /**
    * Constructs an OpenTTS HTTP engine
@@ -126,12 +127,28 @@ export class OpenTtsHttpEngine implements ITtsEngine {
     }
 
     this.cancel();
+    const controller = new AbortController();
+    this.requestController = controller;
 
     try {
-      const audioData = await this.synthesizeText(text, options);
-      await this.playAudioData(audioData, options.volume ?? DEFAULT_SPEECH_VOLUME);
+      const audioData = await this.synthesizeText(text, options, controller.signal);
+      if (controller.signal.aborted) {
+        return;
+      }
+      await this.playAudioData(
+        audioData,
+        options.volume ?? DEFAULT_SPEECH_VOLUME,
+        controller.signal
+      );
     } catch (error) {
+      if (controller.signal.aborted) {
+        return;
+      }
       throw wrapError(error, 'OpenTTS synthesis failed');
+    } finally {
+      if (this.requestController === controller) {
+        this.requestController = null;
+      }
     }
   }
 
@@ -141,7 +158,11 @@ export class OpenTtsHttpEngine implements ITtsEngine {
    * @param options - TTS options
    * @returns The synthesized audio data as ArrayBuffer
    */
-  private async synthesizeText(text: string, options: TtsOptions): Promise<ArrayBuffer> {
+  private async synthesizeText(
+    text: string,
+    options: TtsOptions,
+    signal: AbortSignal
+  ): Promise<ArrayBuffer> {
     const voice = this.selectVoice(options.lang);
     const rate = this.normalizeRate(options.rate);
     const pitch = this.normalizePitch(options.pitch);
@@ -160,6 +181,7 @@ export class OpenTtsHttpEngine implements ITtsEngine {
         Accept: 'audio/wav',
       },
       body: JSON.stringify(requestBody),
+      signal,
     });
 
     if (!response.ok) {
@@ -213,7 +235,11 @@ export class OpenTtsHttpEngine implements ITtsEngine {
    * @param audioData - The audio data as ArrayBuffer
    * @param volume - Volume level (0.0 to 1.0)
    */
-  private async playAudioData(audioData: ArrayBuffer, volume: number): Promise<void> {
+  private async playAudioData(
+    audioData: ArrayBuffer,
+    volume: number,
+    signal: AbortSignal
+  ): Promise<void> {
     if (!this.audioContext) {
       throw new Error('AudioContext not available');
     }
@@ -224,12 +250,25 @@ export class OpenTtsHttpEngine implements ITtsEngine {
         return;
       }
 
+      const handleAbort = (): void => resolve();
+      signal.addEventListener('abort', handleAbort, { once: true });
+
       void this.audioContext.decodeAudioData(
         audioData,
         (audioBuffer) => {
+          signal.removeEventListener('abort', handleAbort);
+          if (signal.aborted) {
+            resolve();
+            return;
+          }
           this.playAudioBuffer(audioBuffer, volume, resolve, reject);
         },
         (error) => {
+          signal.removeEventListener('abort', handleAbort);
+          if (signal.aborted) {
+            resolve();
+            return;
+          }
           reject(new Error(`Failed to decode audio: ${String(error)}`));
         }
       );
@@ -280,6 +319,8 @@ export class OpenTtsHttpEngine implements ITtsEngine {
    * Cancels any ongoing speech synthesis
    */
   cancel(): void {
+    this.requestController?.abort();
+    this.requestController = null;
     if (this.currentAudioSource) {
       try {
         this.currentAudioSource.stop();

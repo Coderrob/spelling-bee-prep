@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { IDictionaryLoader, WordSet, GradeBand, LocaleCode } from '@/types';
+import type { IDictionaryLoader, WordSet, GradeLevel, LocaleCode } from '@/types';
 import { WordSetSchema } from '@/types/schemas';
 
 /**
@@ -27,8 +27,8 @@ export class JsonDictionaryLoader implements IDictionaryLoader {
    * @param locale - The locale code for the dictionary
    * @returns The loaded and validated WordSet
    */
-  async load(gradeBand: GradeBand, locale: LocaleCode): Promise<WordSet> {
-    const data = await this.fetchData(gradeBand, locale);
+  async load(gradeLevel: GradeLevel, locale: LocaleCode): Promise<WordSet> {
+    const data = await this.fetchData(gradeLevel, locale);
     return this.validate(data);
   }
 
@@ -38,8 +38,8 @@ export class JsonDictionaryLoader implements IDictionaryLoader {
    * @param locale - The locale code for the dictionary
    * @returns The fetched dictionary data
    */
-  private async fetchData(gradeBand: GradeBand, locale: LocaleCode): Promise<unknown> {
-    const path = this.buildPath(gradeBand, locale);
+  private async fetchData(gradeLevel: GradeLevel, locale: LocaleCode): Promise<unknown> {
+    const path = this.buildPath(gradeLevel, locale);
     const response = await fetch(path);
 
     if (!this.isResponseOk(response)) {
@@ -55,9 +55,8 @@ export class JsonDictionaryLoader implements IDictionaryLoader {
    * @param locale - The locale code for the dictionary
    * @returns The constructed file path
    */
-  private buildPath(gradeBand: GradeBand, locale: LocaleCode): string {
-    const localePrefix = locale.split('-')[0];
-    return `/data/dictionaries/${localePrefix}/${gradeBand}.json`;
+  private buildPath(gradeLevel: GradeLevel, locale: LocaleCode): string {
+    return `/data/dictionaries/${locale}/grade-${gradeLevel.toLocaleLowerCase()}.json`;
   }
 
   /**

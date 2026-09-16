@@ -14,19 +14,34 @@
  * limitations under the License.
  */
 
-import type { Difficulty, GradeBand, LocaleCode } from './enums';
+import type { Difficulty, GradeBand, GradeLevel, LocaleCode } from './enums';
+
+/** Describes the origin and reuse terms for curriculum content. */
+export interface CatalogSource {
+  id: string;
+  name: string;
+  license: string;
+  url?: string;
+}
 
 /**
  * Represents a single word entry in the dictionary
  */
 export interface WordEntry {
+  id: string;
   word: string;
+  gradeLevel: GradeLevel;
   difficulty: Difficulty;
   definition: string;
   usageExample?: string;
   origin?: string;
   phonetic?: string;
   category?: string;
+  partOfSpeech?: string;
+  syllableCount?: number;
+  spellingPatterns?: string[];
+  sourceId: string;
+  /** @deprecated Use gradeLevel for curriculum selection. */
   gradeBand?: GradeBand;
 }
 
@@ -39,7 +54,8 @@ export interface WordSet {
   words: WordEntry[];
   version: string;
   language: LocaleCode;
-  gradeBand?: GradeBand;
+  gradeLevel: GradeLevel;
+  sources: CatalogSource[];
 }
 
 /**
@@ -58,10 +74,32 @@ export interface PracticeStatistics {
  * Captures a single practice attempt for historical insights
  */
 export interface PracticeAttempt {
+  wordId?: string;
   word: string;
   correct: boolean;
   difficulty: Difficulty;
+  gradeLevel?: GradeLevel;
+  responseTimeMs?: number;
+  hintsUsed?: number;
   timestamp: number;
+}
+
+/** Persisted spaced-review state for one curriculum word. */
+export interface WordMastery {
+  wordId: string;
+  stage: number;
+  attempts: number;
+  correctAttempts: number;
+  correctStreak: number;
+  lastSeenAt: number;
+  dueAt: number;
+}
+
+/** Versioned learner data persisted independently from a practice session. */
+export interface ProgressSnapshot {
+  version: 1;
+  attempts: PracticeAttempt[];
+  mastery: Record<string, WordMastery>;
 }
 
 /**

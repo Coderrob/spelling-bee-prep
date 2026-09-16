@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { GradeBand, LocaleCode } from './enums';
-import type { TtsOptions, WordEntry, WordSet } from './models';
+import type { GradeLevel, LocaleCode } from './enums';
+import type { ProgressSnapshot, TtsOptions, WordEntry, WordSet } from './models';
 
 /**
  * Interface for TTS engine implementations
@@ -40,7 +40,7 @@ export interface ITtsService {
  * Interface for dictionary data loaders
  */
 export interface IDictionaryLoader {
-  load(gradeBand: GradeBand, locale: LocaleCode): Promise<WordSet>;
+  load(gradeLevel: GradeLevel, locale: LocaleCode): Promise<WordSet>;
   validate(data: unknown): WordSet;
 }
 
@@ -48,7 +48,15 @@ export interface IDictionaryLoader {
  * Interface for dictionary service
  */
 export interface IDictionaryService {
-  getWords(gradeBand?: GradeBand): Promise<WordEntry[]>;
-  getWordSet(gradeBand: GradeBand): Promise<WordSet>;
-  getRandomWord(gradeBand?: GradeBand): Promise<WordEntry | null>;
+  listGradeLevels(): readonly GradeLevel[];
+  getWords(gradeLevel?: GradeLevel): Promise<WordEntry[]>;
+  getWordSet(gradeLevel: GradeLevel): Promise<WordSet>;
+  getRandomWord(gradeLevel?: GradeLevel): Promise<WordEntry | null>;
+}
+
+/** Persistence boundary for learner attempts and spaced-review state. */
+export interface IProgressRepository {
+  load(): ProgressSnapshot;
+  save(snapshot: ProgressSnapshot): void;
+  clear(): void;
 }

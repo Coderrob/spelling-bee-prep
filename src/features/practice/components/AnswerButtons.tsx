@@ -16,7 +16,7 @@
 
 import type { ReactElement } from 'react';
 import { Lightbulb } from '@mui/icons-material';
-import { Stack, Button } from '@mui/material';
+import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { HintType } from '@/types';
 
@@ -47,7 +47,10 @@ export function AnswerButtons({
   const { t } = useTranslation();
 
   return (
-    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ width: '100%' }}>
+    <div className="answer-actions">
+      <Button type="submit" variant="contained" fullWidth disabled={isSubmitDisabled}>
+        {t('practice.submit')}
+      </Button>
       <Button
         variant="outlined"
         startIcon={<Lightbulb />}
@@ -56,9 +59,6 @@ export function AnswerButtons({
       >
         {t('practice.hint')}
       </Button>
-      <Button type="submit" variant="contained" fullWidth disabled={isSubmitDisabled}>
-        {t('practice.submit')}
-      </Button>
-    </Stack>
+    </div>
   );
 }

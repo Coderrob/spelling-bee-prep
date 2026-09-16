@@ -15,7 +15,7 @@
  */
 
 import type { ReactElement } from 'react';
-import { Alert, Typography } from '@mui/material';
+import { Lightbulb } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { HintType, type WordEntry } from '@/types';
 
@@ -42,6 +42,11 @@ interface HintDisplayProps {
 export function HintDisplay({ hintType, currentWord }: Readonly<HintDisplayProps>): ReactElement {
   const { t } = useTranslation();
 
+  function maskSpellingWord(value: string): string {
+    const escapedWord = currentWord.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return value.replace(new RegExp(`\\b${escapedWord}\\b`, 'gi'), '___');
+  }
+
   /**
    * Retrieves the content of the hint based on its type.
    *
@@ -50,7 +55,7 @@ export function HintDisplay({ hintType, currentWord }: Readonly<HintDisplayProps
   function getHintContent(): string {
     switch (hintType) {
       case HintType.DEFINITION:
-        return currentWord.definition;
+        return maskSpellingWord(currentWord.definition);
       case HintType.USAGE_EXAMPLE:
         return currentWord.usageExample ?? '';
       case HintType.ORIGIN:
@@ -61,11 +66,14 @@ export function HintDisplay({ hintType, currentWord }: Readonly<HintDisplayProps
   }
 
   return (
-    <Alert severity="info">
-      <Typography variant="subtitle2" fontWeight="bold">
-        {t(`practice.hints.${hintType}`)}:
-      </Typography>
-      <Typography>{getHintContent()}</Typography>
-    </Alert>
+    <aside className="hint-card" aria-label={`${t(`practice.hints.${hintType}`)} hint`}>
+      <span className="hint-card__icon">
+        <Lightbulb fontSize="small" aria-hidden="true" />
+      </span>
+      <div className="hint-card__content">
+        <p className="hint-card__label">{t(`practice.hints.${hintType}`)}</p>
+        <p className="hint-card__text">{getHintContent()}</p>
+      </div>
+    </aside>
   );
 }

@@ -1,24 +1,34 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { usePracticeStore } from '../../src/store/practiceStore';
-import { Difficulty, HintType } from '../../src/types/enums';
+import { useProgressStore } from '../../src/store/progressStore';
+import { Difficulty, GradeLevel, HintType, PracticeMode } from '../../src/types/enums';
 import type { WordEntry } from '../../src/types/models';
 
 describe('Practice Store', () => {
   const mockWords: WordEntry[] = [
     {
+      id: 'test-apple',
       word: 'apple',
+      gradeLevel: GradeLevel.THIRD,
       difficulty: Difficulty.EASY,
       definition: 'A fruit',
+      sourceId: 'test',
     },
     {
+      id: 'test-banana',
       word: 'banana',
+      gradeLevel: GradeLevel.THIRD,
       difficulty: Difficulty.MEDIUM,
       definition: 'A yellow fruit',
+      sourceId: 'test',
     },
     {
+      id: 'test-cherry',
       word: 'cherry',
+      gradeLevel: GradeLevel.THIRD,
       difficulty: Difficulty.HARD,
       definition: 'A red fruit',
+      sourceId: 'test',
     },
   ];
 
@@ -26,6 +36,7 @@ describe('Practice Store', () => {
     const store = usePracticeStore.getState();
     store.resetSession();
     store.setWordPool([]);
+    useProgressStore.setState({ attempts: [], mastery: {} });
   });
 
   it('should initialize with default values', () => {
@@ -79,8 +90,46 @@ describe('Practice Store', () => {
     expect(word?.difficulty).toBe(Difficulty.EASY);
   });
 
+  it('should allow due words to override no-repeat tracking in adaptive mode', () => {
+    const now = Date.now();
+    const store = usePracticeStore.getState();
+    store.setWordPool(mockWords);
+    store.setMode(PracticeMode.ADAPTIVE);
+    usePracticeStore.setState({ usedWords: new Set([mockWords[0].id]) });
+    useProgressStore.setState({
+      mastery: {
+        [mockWords[0].id]: {
+          wordId: mockWords[0].id,
+          stage: 0,
+          attempts: 1,
+          correctAttempts: 0,
+          correctStreak: 0,
+          lastSeenAt: now - 1_000,
+          dueAt: now - 1,
+        },
+        ...Object.fromEntries(
+          mockWords.slice(1).map((word) => [
+            word.id,
+            {
+              wordId: word.id,
+              stage: 1,
+              attempts: 1,
+              correctAttempts: 1,
+              correctStreak: 1,
+              lastSeenAt: now,
+              dueAt: now + 86_400_000,
+            },
+          ])
+        ),
+      },
+    });
+
+    expect(store.getRandomWord()?.id).toBe(mockWords[0].id);
+  });
+
   it('should toggle hint', () => {
     const store = usePracticeStore.getState();
+    store.setCurrentWord(mockWords[0]);
     expect(store.showHint).toBe(false);
     store.toggleHint(HintType.DEFINITION);
     const updatedStore = usePracticeStore.getState();
@@ -97,7 +146,8 @@ describe('Practice Store', () => {
 
     store.resetSession();
 
-    expect(store.currentWord).toBeNull();
-    expect(store.userInput).toBe('');
+    const resetStore = usePracticeStore.getState();
+    expect(resetStore.currentWord).toBeNull();
+    expect(resetStore.userInput).toBe('');
   });
 });

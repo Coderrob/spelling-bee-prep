@@ -15,7 +15,6 @@
  */
 
 import type { ReactElement } from 'react';
-import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import { InsightChart } from './InsightChart';
 import type { EChartsOption } from 'echarts';
 
@@ -55,34 +54,18 @@ export function InsightCard({
   height = 320,
 }: Readonly<InsightCardProps>): ReactElement {
   return (
-    <Card
-      elevation={3}
-      sx={{
-        borderRadius: 3,
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <CardHeader
-        title={
-          <Typography component="h3" variant="h6" sx={{ fontWeight: 600 }}>
-            {title}
-          </Typography>
-        }
-        subheader={
-          <Typography variant="body2" color="text.secondary">
-            {subtitle}
-          </Typography>
-        }
-      />
-      <CardContent sx={{ flexGrow: 1 }}>
+    <article className="insight-card">
+      <header className="insight-card__header">
+        <h3 className="insight-card__title">{title}</h3>
+        <p className="insight-card__subtitle">{subtitle}</p>
+      </header>
+      <div className="insight-card__body">
         {isEmpty ? (
-          <Typography color="text.secondary">{emptyMessage}</Typography>
+          <p className="insight-card__empty">{emptyMessage}</p>
         ) : (
           <InsightChart option={option} ariaLabel={ariaLabel} height={height} />
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </article>
   );
 }

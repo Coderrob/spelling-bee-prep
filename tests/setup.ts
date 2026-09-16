@@ -8,8 +8,7 @@ afterEach(() => {
 });
 
 // Mock Web Speech API
-/* eslint-disable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
-(globalThis as any).speechSynthesis = {
+globalThis.speechSynthesis = {
   speak: (utterance: SpeechSynthesisUtterance) => {
     // Simulate speech completion
     setTimeout(() => {
@@ -43,7 +42,7 @@ afterEach(() => {
 /**
  * Mock SpeechSynthesisUtterance class
  */
-(globalThis as any).SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
+globalThis.SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
   text = '';
   lang = '';
   voice = null;
@@ -65,4 +64,3 @@ afterEach(() => {
   };
   dispatchEvent = (): boolean => false;
 } as unknown as typeof SpeechSynthesisUtterance;
-/* eslint-enable @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */

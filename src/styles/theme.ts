@@ -70,10 +70,13 @@ export const theme = createTheme({
           borderRadius: 12,
           boxShadow: 'none',
         },
-        containedPrimary: {
-          boxShadow: '0 10px 24px -12px rgba(79, 70, 229, 0.8)',
-        },
       },
+      variants: [
+        {
+          props: { variant: 'contained', color: 'primary' },
+          style: { boxShadow: '0 10px 24px -12px rgba(79, 70, 229, 0.8)' },
+        },
+      ],
     },
     MuiIconButton: {
       styleOverrides: {

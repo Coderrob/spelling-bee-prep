@@ -65,13 +65,34 @@ function Insights({ history }: Pick<PracticeSessionController, 'history'>): Reac
 }
 
 /** Presentational practice workflow driven entirely by a controller contract. */
-export function PracticeView(controller: Readonly<PracticeSessionController>): ReactElement {
-  const { currentWord } = controller;
+export function PracticeView({
+  answerInputRef,
+  cardRef,
+  catalogError,
+  catalogStatus,
+  currentWord,
+  history,
+  hintType,
+  isCorrect,
+  isSpeaking,
+  isSubmitDisabled,
+  nextButtonRef,
+  reset,
+  setUserInput,
+  showHint,
+  showHintOfType,
+  speak,
+  speechError,
+  startOrAdvance,
+  statistics,
+  submit,
+  userInput,
+}: Readonly<PracticeSessionController>): ReactElement {
   if (!currentWord) {
     return (
       <div className="practice-page">
         <PracticeControls isPageHeading />
-        {controller.catalogStatus === 'loading' && (
+        {catalogStatus === 'loading' && (
           <div className="practice-status" role="status" aria-live="polite">
             <div className="practice-status__content">
               <CircularProgress aria-label="Loading word catalog" size={34} />
@@ -79,13 +100,13 @@ export function PracticeView(controller: Readonly<PracticeSessionController>): R
             </div>
           </div>
         )}
-        {controller.catalogStatus === 'error' && (
+        {catalogStatus === 'error' && (
           <div className="practice-status practice-status--error" role="alert">
-            {controller.catalogError}
+            {catalogError}
           </div>
         )}
-        {controller.catalogStatus === 'ready' && <EmptyState onStart={controller.startOrAdvance} />}
-        <Insights history={controller.history} />
+        {catalogStatus === 'ready' && <EmptyState onStart={startOrAdvance} />}
+        <Insights history={history} />
       </div>
     );
   }
@@ -93,7 +114,7 @@ export function PracticeView(controller: Readonly<PracticeSessionController>): R
   return (
     <div className="practice-page">
       <div
-        ref={controller.cardRef}
+        ref={cardRef}
         className="practice-card"
         role="region"
         aria-labelledby="practice-word-prompt"
@@ -103,13 +124,13 @@ export function PracticeView(controller: Readonly<PracticeSessionController>): R
             <span className="practice-card__status-dot" aria-hidden="true" />
             Practice in progress
           </p>
-          <button type="button" className="practice-card__reset" onClick={controller.reset}>
+          <button type="button" className="practice-card__reset" onClick={reset}>
             <RestartAlt fontSize="small" aria-hidden="true" />
             Restart
           </button>
         </div>
         <div className="practice-card__body">
-          <ScoreBar statistics={controller.statistics} />
+          <ScoreBar statistics={statistics} />
           <div className="audio-prompt">
             <p className="audio-prompt__step">Step 1 · Listen</p>
             <h1 id="practice-word-prompt" className="audio-prompt__title">
@@ -119,45 +140,36 @@ export function PracticeView(controller: Readonly<PracticeSessionController>): R
               Listen as many times as you need. The word stays hidden until you answer.
             </p>
             <div className="audio-prompt__action">
-              <PlayButton onClick={controller.speak} disabled={controller.isSpeaking} />
+              <PlayButton onClick={speak} disabled={isSpeaking} />
             </div>
             <p className="audio-prompt__status" aria-live="polite">
-              {controller.speechError ?? (controller.isSpeaking ? 'Playing pronunciation...' : '')}
+              {speechError ?? (isSpeaking ? 'Playing pronunciation...' : '')}
             </p>
             <div className="audio-prompt__meta">
               <CorrectnessChip difficulty={currentWord.difficulty} />
             </div>
           </div>
-          {controller.showHint && controller.hintType && (
-            <HintDisplay hintType={controller.hintType} currentWord={currentWord} />
-          )}
-          <form
-            onSubmit={controller.submit}
-            aria-label="Word submission form"
-            className="answer-form"
-          >
+          {showHint && hintType && <HintDisplay hintType={hintType} currentWord={currentWord} />}
+          <form onSubmit={submit} aria-label="Word submission form" className="answer-form">
             <div className="answer-form__heading">
               <p className="answer-form__step">Step 2 · Spell</p>
               <h3 className="answer-form__title">Type the word you heard</h3>
             </div>
             <div className="answer-form__controls">
               <AnswerField
-                ref={controller.answerInputRef}
-                value={controller.userInput}
-                onChange={controller.setUserInput}
-                disabled={controller.isCorrect !== null}
+                ref={answerInputRef}
+                value={userInput}
+                onChange={setUserInput}
+                disabled={isCorrect !== null}
               />
-              {controller.isCorrect === null ? (
-                <AnswerButtons
-                  onHint={controller.showHintOfType}
-                  isSubmitDisabled={controller.isSubmitDisabled}
-                />
+              {isCorrect === null ? (
+                <AnswerButtons onHint={showHintOfType} isSubmitDisabled={isSubmitDisabled} />
               ) : (
                 <FeedbackDisplay
-                  isCorrect={controller.isCorrect}
+                  isCorrect={isCorrect}
                   currentWord={currentWord}
-                  onNext={controller.startOrAdvance}
-                  nextButtonRef={controller.nextButtonRef}
+                  onNext={startOrAdvance}
+                  nextButtonRef={nextButtonRef}
                 />
               )}
             </div>
@@ -165,7 +177,7 @@ export function PracticeView(controller: Readonly<PracticeSessionController>): R
         </div>
       </div>
       <PracticeControls />
-      <Insights history={controller.history} />
+      <Insights history={history} />
     </div>
   );
 }

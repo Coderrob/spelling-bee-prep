@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { FormEvent, RefObject } from 'react';
-import anime from 'animejs';
+import { animate } from 'animejs';
 import { TtsService } from '@/services/tts/TtsService';
 import { useCatalogStore, type CatalogStatus } from '@/store/catalogStore';
 import { usePracticeStore } from '@/store/practiceStore';
@@ -119,10 +119,13 @@ export function usePracticeSessionController(): PracticeSessionController {
   }, [catalogStatus, catalogWords, setWordPool]);
 
   useEffect(() => {
-    if (currentWord) {
-      void speakWord(currentWord.word);
-    }
+    const speechTimeout = globalThis.setTimeout(() => {
+      if (currentWord) {
+        void speakWord(currentWord.word);
+      }
+    }, 0);
     return () => {
+      globalThis.clearTimeout(speechTimeout);
       speechRequestRef.current += 1;
       ttsService.cancel();
     };
@@ -130,32 +133,26 @@ export function usePracticeSessionController(): PracticeSessionController {
 
   useEffect(() => {
     if (isBrowser() && cardRef.current && !prefersReducedMotion()) {
-      anime({
-        targets: cardRef.current,
-        opacity: [
-          { value: 0.85, duration: 120 },
-          { value: 1, duration: 240 },
-        ],
-        translateY: [
-          { value: 8, duration: 200 },
-          { value: 0, duration: 350 },
-        ],
-        easing: 'easeOutCubic',
+      animate(cardRef.current, {
+        opacity: { from: 0.85, to: 1 },
+        y: { from: 8, to: 0 },
+        duration: 350,
+        ease: 'outCubic',
       });
     }
   }, [currentWord]);
 
   useEffect(() => {
     if (isBrowser() && cardRef.current && isCorrect !== null && !prefersReducedMotion()) {
-      anime({
-        targets: cardRef.current,
-        backgroundColor: [
-          'rgba(20,24,40,0)',
-          isCorrect ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)',
-          'rgba(20,24,40,0)',
+      animate(cardRef.current, {
+        keyframes: [
+          {
+            backgroundColor: isCorrect ? 'rgba(76, 175, 80, 0.1)' : 'rgba(244, 67, 54, 0.1)',
+            duration: 400,
+          },
+          { backgroundColor: 'rgba(20,24,40,0)', duration: 400 },
         ],
-        duration: 800,
-        easing: 'easeInOutQuad',
+        ease: 'inOutQuad',
       });
     }
   }, [currentWord, isCorrect]);

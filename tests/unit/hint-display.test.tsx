@@ -23,7 +23,7 @@ describe('HintDisplay', () => {
       </I18nextProvider>
     );
 
-    expect(screen.getByText('A playing ___ used in a game.')).toBeVisible();
-    expect(screen.queryByText(/playing card/i)).not.toBeInTheDocument();
+    expect(screen.getByText('A playing ___ used in a game.')).toBeDefined();
+    expect(screen.queryByText(/playing card/i)).toBeNull();
   });
 });

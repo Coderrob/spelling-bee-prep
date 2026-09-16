@@ -20,5 +20,4 @@ export { EmptyState } from './EmptyState';
 export { FeedbackDisplay } from './FeedbackDisplay';
 export { GradeSelector } from './GradeSelector';
 export { HintDisplay } from './HintDisplay';
-export { PracticeInsights } from './PracticeInsights';
 export { PracticeModeSelector } from './PracticeModeSelector';

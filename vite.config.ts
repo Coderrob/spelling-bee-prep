@@ -37,9 +37,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
       // Provide empty module for Node.js 'module' builtin used by espeak-ng
-      module: path.resolve(__dirname, './src/utils/empty-module.ts'),
+      module: path.resolve(import.meta.dirname, './src/utils/empty-module.ts'),
     },
   },
   build: {

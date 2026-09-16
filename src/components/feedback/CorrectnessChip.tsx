@@ -15,38 +15,11 @@
  */
 
 import type { ReactElement } from 'react';
-import { Chip } from '@mui/material';
-import { Difficulty } from '@/types';
-import type { ChipProps } from '@mui/material';
+import type { Difficulty } from '@/types';
 
 /** Props for the CorrectnessChip component. */
 interface CorrectnessChipProps {
   difficulty: Difficulty;
-}
-
-/** Type representing valid chip colors. */
-type ChipColor = NonNullable<ChipProps['color']>;
-
-/** Maps difficulty levels to corresponding chip colors. */
-enum DifficultyColorMap {
-  EASY = 'success',
-  MEDIUM = 'warning',
-  HARD = 'error',
-}
-
-/**
- * Maps difficulty levels to corresponding chip colors.
- *
- * @param difficulty - The difficulty level
- * @returns The corresponding ChipColor
- */
-function getDifficultyColor(difficulty: Difficulty): ChipColor {
-  const colorMap: Record<Difficulty, ChipColor> = {
-    [Difficulty.EASY]: DifficultyColorMap.EASY,
-    [Difficulty.MEDIUM]: DifficultyColorMap.MEDIUM,
-    [Difficulty.HARD]: DifficultyColorMap.HARD,
-  };
-  return colorMap[difficulty];
 }
 
 /**
@@ -58,5 +31,10 @@ function getDifficultyColor(difficulty: Difficulty): ChipColor {
  * <CorrectnessChip difficulty={Difficulty.EASY} />
  */
 export function CorrectnessChip({ difficulty }: Readonly<CorrectnessChipProps>): ReactElement {
-  return <Chip label={difficulty.toUpperCase()} color={getDifficultyColor(difficulty)} />;
+  return (
+    <span className={`difficulty-badge difficulty-badge--${difficulty}`}>
+      <span className="difficulty-badge__dot" aria-hidden="true" />
+      {difficulty} word
+    </span>
+  );
 }

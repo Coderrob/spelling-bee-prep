@@ -15,8 +15,8 @@
  */
 
 import type { ReactElement, Ref } from 'react';
-import { NavigateNext } from '@mui/icons-material';
-import { Alert, Button, Typography } from '@mui/material';
+import { CheckCircle, NavigateNext, ReplayCircleFilled } from '@mui/icons-material';
+import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import type { WordEntry } from '@/types';
 
@@ -54,18 +54,29 @@ export function FeedbackDisplay({
   const { t } = useTranslation();
 
   return (
-    <>
-      <Alert severity={isCorrect ? 'success' : 'error'}>
-        <Typography variant="h6">
-          {isCorrect ? t('practice.correct') : t('practice.incorrect')}
-        </Typography>
-        <Typography>
-          The word is: <strong>{currentWord.word}</strong>
-        </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
-          {currentWord.definition}
-        </Typography>
-      </Alert>
+    <div className="feedback-panel">
+      <div
+        role="status"
+        aria-live="polite"
+        className={`feedback ${isCorrect ? 'feedback--correct' : 'feedback--incorrect'}`}
+      >
+        <span className="feedback__icon">
+          {isCorrect ? (
+            <CheckCircle aria-hidden="true" />
+          ) : (
+            <ReplayCircleFilled aria-hidden="true" />
+          )}
+        </span>
+        <div className="feedback__content">
+          <p className="feedback__title">
+            {isCorrect ? t('practice.correct') : 'Good try — keep learning!'}
+          </p>
+          <p className="feedback__answer">
+            The word is <strong>{currentWord.word}</strong>.
+          </p>
+          <p className="feedback__definition">{currentWord.definition}</p>
+        </div>
+      </div>
       <Button
         variant="contained"
         startIcon={<NavigateNext />}
@@ -75,6 +86,6 @@ export function FeedbackDisplay({
       >
         {t('practice.nextWord')}
       </Button>
-    </>
+    </div>
   );
 }

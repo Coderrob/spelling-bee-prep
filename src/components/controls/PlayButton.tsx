@@ -16,7 +16,6 @@
 
 import type { ReactElement } from 'react';
 import { VolumeUp } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
 import { Size } from '@/types';
 
 /** Props for the PlayButton component. */
@@ -42,14 +41,18 @@ export function PlayButton({
   size = Size.LARGE,
 }: Readonly<PlayButtonProps>): ReactElement {
   return (
-    <IconButton
-      color="primary"
-      size={size}
+    <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
       aria-label="Play pronunciation"
+      className={`audio-button ${disabled ? 'audio-button--playing' : ''}`}
     >
-      <VolumeUp fontSize={size} />
-    </IconButton>
+      <span className="audio-button__icon">
+        <VolumeUp fontSize={size} aria-hidden="true" />
+      </span>
+      <span className="audio-button__label">{disabled ? 'Playing...' : 'Hear the word'}</span>
+      <kbd className="audio-button__shortcut">SPACE</kbd>
+    </button>
   );
 }

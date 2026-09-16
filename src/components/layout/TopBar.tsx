@@ -16,7 +16,6 @@
 
 import type { ReactElement } from 'react';
 import { Settings as SettingsIcon } from '@mui/icons-material';
-import { AppBar, Toolbar, Typography, IconButton } from '@mui/material';
 import { APP_NAME, APP_EMOJI } from '@/types/constants';
 
 /**
@@ -36,15 +35,27 @@ interface TopBarProps {
  */
 export function TopBar({ onSettingsClick }: Readonly<TopBarProps>): ReactElement {
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          {APP_EMOJI} {APP_NAME}
-        </Typography>
-        <IconButton color="inherit" onClick={onSettingsClick} aria-label="Settings">
-          <SettingsIcon />
-        </IconButton>
-      </Toolbar>
-    </AppBar>
+    <header className="app-header">
+      <div className="app-header__inner">
+        <div className="app-brand">
+          <span className="app-brand__mark" aria-hidden="true">
+            {APP_EMOJI}
+          </span>
+          <div className="app-brand__copy">
+            <p className="app-brand__name">{APP_NAME}</p>
+            <p className="app-brand__tagline">Listen. Spell. Grow.</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onSettingsClick}
+          aria-label="Open settings"
+          className="app-header__settings"
+        >
+          <SettingsIcon fontSize="small" aria-hidden="true" />
+          <span className="app-header__settings-label">Settings</span>
+        </button>
+      </div>
+    </header>
   );
 }

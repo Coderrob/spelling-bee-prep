@@ -30,6 +30,7 @@ export class EspeakWasmEngine implements ITtsEngine {
   private currentAudioSource: AudioBufferSourceNode | null = null;
   private readonly audioContext: AudioContext | null = null;
   private loadingPromise: Promise<void> | null = null;
+  private requestGeneration = 0;
 
   constructor() {
     if (hasAudioContextSupport()) {
@@ -70,10 +71,14 @@ export class EspeakWasmEngine implements ITtsEngine {
       return;
     }
 
-    this.cancel();
+    const requestGeneration = ++this.requestGeneration;
+    this.stopAudio();
 
     try {
       await this.loadEspeakModule();
+      if (requestGeneration !== this.requestGeneration) {
+        return;
+      }
       const audioBuffer = this.synthesizeSpeech(text, options);
       await this.playAudioBuffer(audioBuffer, options.volume ?? DEFAULT_SPEECH_VOLUME);
     } catch (error) {
@@ -374,6 +379,11 @@ export class EspeakWasmEngine implements ITtsEngine {
    * Cancels any ongoing speech synthesis
    */
   cancel(): void {
+    this.requestGeneration += 1;
+    this.stopAudio();
+  }
+
+  private stopAudio(): void {
     if (this.currentAudioSource) {
       try {
         this.currentAudioSource.stop();

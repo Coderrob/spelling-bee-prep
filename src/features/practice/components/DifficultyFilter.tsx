@@ -60,7 +60,7 @@ export function DifficultyFilter(): ReactElement {
   const label = t('practice.filters.difficulty', 'Filter by difficulty');
 
   return (
-    <FormControl fullWidth size="small">
+    <FormControl fullWidth size="small" className="practice-control">
       <InputLabel id={`${SELECT_ID}-label`}>{label}</InputLabel>
       <Select
         labelId={`${SELECT_ID}-label`}
@@ -84,6 +84,7 @@ export function DifficultyFilter(): ReactElement {
           </MenuItem>
         ))}
       </Select>
+      <p className="practice-control__helper">Choose one or more challenge levels</p>
     </FormControl>
   );
 }

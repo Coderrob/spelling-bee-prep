@@ -15,6 +15,7 @@
  */
 
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import { LocaleCode } from '@/types';
 import {
   DEFAULT_SPEECH_RATE,
@@ -42,14 +43,28 @@ interface SettingsActions {
 type SettingsStore = SettingsState & SettingsActions;
 
 /** Zustand store for managing application settings such as locale and TTS parameters. */
-export const useSettingsStore = create<SettingsStore>((set) => ({
-  locale: LocaleCode.EN_US,
-  speechRate: DEFAULT_SPEECH_RATE,
-  speechVolume: DEFAULT_SPEECH_VOLUME,
-  speechPitch: DEFAULT_SPEECH_PITCH,
+export const useSettingsStore = create<SettingsStore>()(
+  persist(
+    (set) => ({
+      locale: LocaleCode.EN_US,
+      speechRate: DEFAULT_SPEECH_RATE,
+      speechVolume: DEFAULT_SPEECH_VOLUME,
+      speechPitch: DEFAULT_SPEECH_PITCH,
 
-  setLocale: (locale) => set({ locale }),
-  setSpeechRate: (rate) => set({ speechRate: rate }),
-  setSpeechVolume: (volume) => set({ speechVolume: volume }),
-  setSpeechPitch: (pitch) => set({ speechPitch: pitch }),
-}));
+      setLocale: (locale) => set({ locale }),
+      setSpeechRate: (rate) => set({ speechRate: rate }),
+      setSpeechVolume: (volume) => set({ speechVolume: volume }),
+      setSpeechPitch: (pitch) => set({ speechPitch: pitch }),
+    }),
+    {
+      name: 'spelling-bee:preferences:v1',
+      storage: createJSONStorage(() => globalThis.localStorage),
+      partialize: ({ locale, speechRate, speechVolume, speechPitch }) => ({
+        locale,
+        speechRate,
+        speechVolume,
+        speechPitch,
+      }),
+    }
+  )
+);

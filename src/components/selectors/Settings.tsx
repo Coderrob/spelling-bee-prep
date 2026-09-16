@@ -30,6 +30,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useSettingsStore } from '@/store/settingsStore';
+import { LocaleCode } from '@/types';
 import { MIN_SPEECH_RATE, MAX_SPEECH_RATE, MIN_VOLUME, MAX_VOLUME } from '@/types/constants';
 import { isNumber } from '@/utils/guards';
 
@@ -52,7 +53,8 @@ interface SettingsProps {
  */
 export function Settings({ open, onClose }: Readonly<SettingsProps>): ReactElement {
   const { t, i18n } = useTranslation();
-  const { speechRate, speechVolume, setSpeechRate, setSpeechVolume } = useSettingsStore();
+  const { locale, speechRate, speechVolume, setLocale, setSpeechRate, setSpeechVolume } =
+    useSettingsStore();
 
   /**
    * Handles changes to the speech rate slider.
@@ -82,13 +84,18 @@ export function Settings({ open, onClose }: Readonly<SettingsProps>): ReactEleme
       <DialogContent>
         <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <FormControl fullWidth>
-            <InputLabel>{t('settings.language')}</InputLabel>
+            <InputLabel id="settings-language-label">{t('settings.language')}</InputLabel>
             <Select
-              value={i18n.language}
+              id="settings-language"
+              labelId="settings-language-label"
+              value={locale}
               label={t('settings.language')}
-              onChange={(e) => i18n.changeLanguage(e.target.value)}
+              onChange={(event) => {
+                setLocale(event.target.value);
+                void i18n.changeLanguage(event.target.value.split('-')[0]);
+              }}
             >
-              <MenuItem value="en">English</MenuItem>
+              <MenuItem value={LocaleCode.EN_US}>English</MenuItem>
             </Select>
           </FormControl>
 

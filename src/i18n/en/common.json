@@ -17,7 +17,8 @@
     "modes": {
       "random": "Random",
       "difficulty": "By Difficulty",
-      "challenges": "Challenges"
+      "challenges": "Challenges",
+      "adaptive": "Adaptive Review"
     },
     "difficulty": {
       "easy": "Easy",

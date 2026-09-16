@@ -15,7 +15,6 @@
  */
 
 import type { ReactNode, ReactElement } from 'react';
-import { Box, Container } from '@mui/material';
 import { TopBar } from './TopBar';
 
 /**
@@ -39,29 +38,18 @@ interface AppShellProps {
  */
 export function AppShell({ children, onSettingsClick }: Readonly<AppShellProps>): ReactElement {
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        bgcolor: 'background.default',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
+    <div className="app-shell">
+      <a className="skip-link" href="#main-content">
+        Skip to practice
+      </a>
+      <div className="app-shell__backdrop" aria-hidden="true" />
       <TopBar onSettingsClick={onSettingsClick} />
-      <Container
-        component="main"
-        maxWidth={false}
-        sx={{
-          flexGrow: 1,
-          width: '100%',
-          maxWidth: { sm: '720px', md: '960px', lg: '1280px' },
-          mx: 'auto',
-          px: { xs: 2, sm: 3, md: 4 },
-          py: { xs: 4, md: 6 },
-        }}
-      >
+      <main id="main-content" className="app-shell__main">
         {children}
-      </Container>
-    </Box>
+      </main>
+      <footer className="app-shell__footer">
+        Built for focused, confidence-building practice from Kindergarten through Grade 12.
+      </footer>
+    </div>
   );
 }

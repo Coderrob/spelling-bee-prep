@@ -156,5 +156,15 @@ export default tseslint.config(
         ...globals.node,
       },
     },
+  },
+
+  // Keep domain rules simple enough to test as pure policies.
+  {
+    files: ['src/domain/**/*.ts'],
+    rules: {
+      complexity: ['error', 6],
+      'max-depth': ['error', 3],
+      'max-lines-per-function': ['error', { max: 80, skipBlankLines: true, skipComments: true }],
+    },
   }
 );

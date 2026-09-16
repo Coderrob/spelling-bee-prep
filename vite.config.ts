@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import path from 'node:path';
 
@@ -36,9 +37,9 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
       // Provide empty module for Node.js 'module' builtin used by espeak-ng
-      module: path.resolve(__dirname, './src/utils/empty-module.ts'),
+      module: path.resolve(import.meta.dirname, './src/utils/empty-module.ts'),
     },
   },
   build: {
@@ -60,6 +61,7 @@ export default defineConfig({
   },
   plugins: [
     suppressThirdPartyWarnings(),
+    tailwindcss(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',

@@ -66,6 +66,7 @@ export const AnswerField = forwardRef<HTMLInputElement, AnswerFieldProps>(
 
     return (
       <TextField
+        id="spelling-answer"
         fullWidth
         label={label}
         value={value}
@@ -74,9 +75,22 @@ export const AnswerField = forwardRef<HTMLInputElement, AnswerFieldProps>(
         autoFocus={autoFocus}
         inputRef={ref}
         autoComplete="off"
+        placeholder="Type what you hear"
+        helperText="Press Enter to check your spelling."
         slotProps={{
-          input: {
+          htmlInput: {
             'aria-label': label,
+            autoCapitalize: 'none',
+            autoCorrect: 'off',
+            spellCheck: false,
+          },
+        }}
+        sx={{
+          '& .MuiInputBase-input': {
+            py: 2,
+            fontSize: { xs: '1.1rem', sm: '1.25rem' },
+            fontWeight: 700,
+            letterSpacing: '0.02em',
           },
         }}
       />

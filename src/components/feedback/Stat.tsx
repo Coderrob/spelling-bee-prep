@@ -15,7 +15,6 @@
  */
 
 import type { ReactElement } from 'react';
-import { Stack, Typography } from '@mui/material';
 
 /**
  * Props for the Stat component.
@@ -37,17 +36,11 @@ interface StatProps {
  */
 export function Stat({ label, value, color }: Readonly<StatProps>): ReactElement {
   return (
-    <Stack spacing={0.25}>
-      <Typography variant="caption" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography
-        variant="h6"
-        component="p"
-        sx={{ fontWeight: 600, color: color ?? 'text.primary' }}
-      >
+    <div className="scoreboard__stat">
+      <dt className="scoreboard__label">{label}</dt>
+      <dd className="scoreboard__value" style={{ color }}>
         {value}
-      </Typography>
-    </Stack>
+      </dd>
+    </div>
   );
 }

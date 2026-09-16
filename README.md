@@ -12,7 +12,7 @@ Help your child master spelling with an interactive, voice-enabled practice app!
 
 ### What You Need
 
-- A computer with [Node.js](https://nodejs.org/) installed (download the LTS version)
+- A computer with [Node.js 24 or newer](https://nodejs.org/) installed
 - A web browser (Chrome, Firefox, Edge, or Safari)
 - About 5 minutes to set up
 
@@ -70,73 +70,44 @@ Click the **gear icon** ⚙️ in the top-right corner to adjust:
 
 ## 📝 How to Add Your Own Spelling Words
 
-The app comes with a small set of sample words, but you'll want to add your child's spelling list! Here's how:
+The bundled curriculum contains 3,300 validated words across Kindergarten through Grade 12. You can extend any grade with a classroom or spelling-bee list.
 
 ### Step 1: Find the Word List File
 
-Open the file: `src/data/loaders/DefaultDataLoader.ts`
+Open the matching JSON pack under `src/data/dictionaries/en-US`, such as `grade-3.json`.
 
 ### Step 2: Add Your Words
 
 Each word follows this format:
 
-```typescript
+```json
 {
-  word: 'example',           // The word to spell
-  difficulty: Difficulty.EASY,  // EASY, MEDIUM, or HARD
-  definition: 'A thing that shows what something is like',
-  usageExample: 'This is an example of how to use the word.',
-  category: 'education',     // Any category you like
-  origin: 'From Latin',      // Optional - where the word comes from
+  "id": "g3-example",
+  "word": "example",
+  "gradeLevel": "3",
+  "difficulty": "medium",
+  "definition": "A thing that shows what something is like",
+  "usageExample": "The teacher wrote an ___ on the board.",
+  "partOfSpeech": "noun",
+  "syllableCount": 3,
+  "spellingPatterns": ["prefix ex", "unstressed vowel"],
+  "sourceId": "project-original"
 }
-```
-
-### Step 3: Real Example - Adding a Week's Spelling Words
-
-```typescript
-export const DEFAULT_WORDS: WordEntry[] = [
-  {
-    word: 'friend',
-    difficulty: Difficulty.EASY,
-    definition: 'A person you know well and like',
-    usageExample: 'My best friend lives next door.',
-    category: 'social',
-  },
-  {
-    word: 'school',
-    difficulty: Difficulty.EASY,
-    definition: 'A place where children go to learn',
-    usageExample: 'I go to school every weekday.',
-    category: 'education',
-  },
-  {
-    word: 'wonderful',
-    difficulty: Difficulty.MEDIUM,
-    definition: 'Extremely good or impressive',
-    usageExample: 'We had a wonderful time at the park.',
-    category: 'adjective',
-  },
-  // Add more words here following the same pattern
-];
 ```
 
 ### Tips for Adding Words
 
 - **Copy and paste** an existing word entry and modify it
-- Put **easier words** at the top for younger children
-- Include the **definition and example** - these appear as hints during practice
-- Use difficulty levels to match your child's grade:
-  - `Difficulty.EASY` - Kindergarten to 2nd grade
-  - `Difficulty.MEDIUM` - 3rd to 5th grade
-  - `Difficulty.HARD` - 6th grade and up
+- Give every word a unique ID and the same grade as its containing pack
+- Treat difficulty as relative to the selected grade
+- Replace the spelling word with `___` in example sentences so hints do not reveal the answer
+- Attribute each entry to one of the pack's declared sources
 - **Save the file** and the app will automatically reload with the new words!
 
 ### Need Help?
 
-- Make sure each word entry ends with a comma (except the last one)
-- Keep the `export const DEFAULT_WORDS: WordEntry[] = [` line at the top
-- Keep the `];` at the very end
-- If something goes wrong, check the browser console for error messages
+- Run `npm run validate:content` to check schema, grade coverage, duplicates, sources, and answer leakage
+- See `docs/CURRICULUM.md` for the complete content model and progression
 
 ---
 
@@ -146,6 +117,8 @@ export const DEFAULT_WORDS: WordEntry[] = [
 
 - **Random Practice**: Words appear in random order to keep practice fresh
 - **Filter by Difficulty**: Focus on Easy, Medium, or Hard words based on your child's level
+- **Challenges**: Prefer difficult and not-yet-mastered words
+- **Adaptive Review**: Revisit due words using spaced repetition
 - **No Repeats**: Words won't repeat until your child has practiced all the selected words
 
 ### 🔊 Voice Features
@@ -218,7 +191,7 @@ The practice screen is clean and distraction-free, with big buttons for listenin
 
 ### I added words but they're not showing up
 
-- Make sure you saved the `DefaultDataLoader.ts` file
+- Make sure you saved the appropriate grade JSON file
 - Check that each word entry has a comma at the end (except the last one)
 - Refresh your browser (press F5 or Ctrl+R)
 - Check the browser console (F12) for any red error messages
@@ -268,10 +241,10 @@ This app is built with modern web technologies for performance and maintainabili
 
 - **Frontend**: React 19 with TypeScript 5.9
 - **Build Tool**: Vite 7 with hot module replacement
-- **UI Framework**: Material UI 7 with Emotion styling
+- **UI System**: Tailwind CSS 4 design tokens and BEM component classes with Material UI primitives
 - **State Management**: Zustand 5 stores
 - **Text-to-Speech**: Web Speech API with eSpeak WASM and OpenTTS fallbacks
-- **Testing**: Vitest 4 (unit), Playwright (E2E)
+- **Testing**: Vitest 4 (unit), Playwright (E2E), and Axe (WCAG accessibility checks)
 - **Code Quality**: ESLint 9, Prettier 3, TypeScript strict mode
 - **PWA**: vite-plugin-pwa with Workbox caching
 
@@ -303,8 +276,9 @@ src/
 
 ### Key Files for Customization
 
-- **Add Words**: `src/data/loaders/DefaultDataLoader.ts` - Main word dictionary
-- **Styling**: `src/styles/theme.ts` - Material UI theme configuration
+- **Add Words**: `src/data/dictionaries/en-US/` - Validated grade-level word packs
+- **Styling**: `src/index.css` - Tailwind-backed BEM components and global accessibility styles
+- **Theme**: `src/styles/theme.ts` - Material UI primitive configuration
 - **Translations**: `src/i18n/en/common.json` - UI text and labels
 - **Settings**: `src/store/settingsStore.ts` - Default TTS and locale settings
 
@@ -313,6 +287,8 @@ src/
 - **Component-based**: Functional components with React hooks
 - **Type-safe**: Full TypeScript coverage with strict mode enabled
 - **State management**: Zustand for global state (practice session, user settings)
+- **Domain patterns**: Repository, Strategy, state machine, container/presenter, and TTS fallback chain
+- **Adaptive learning**: Durable per-word mastery and spaced-review scheduling
 - **Service layer**: Abstracted TTS and dictionary services with multiple implementations
 - **Local-first**: All data stored in browser LocalStorage, no external dependencies
 - **Progressive Web App**: Service worker enables offline usage and installation
@@ -326,9 +302,10 @@ We welcome contributions! The codebase follows React and TypeScript best practic
 - Business logic belongs in `src/store/` or `src/services/`
 - All new code should include TypeScript types
 - Run tests and linters before submitting PRs
-- Follow the existing code style (Prettier will help!)
+- Follow BEM naming for custom CSS; use Tailwind utilities through `@apply`
+- Run the Axe-enabled browser tests when changing interactive UI
 
-For detailed technical documentation, see the inline JSDoc comments throughout the codebase.
+For detailed guidance, see `docs/UX-ACCESSIBILITY-STUDY-GUIDE.md` and the inline JSDoc comments throughout the codebase.
 
 ---
 

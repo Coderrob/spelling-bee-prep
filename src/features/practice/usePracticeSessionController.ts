@@ -74,20 +74,26 @@ export function usePracticeSessionController(): PracticeSessionController {
   const answerInputRef = useRef<HTMLInputElement>(null);
   const nextButtonRef = useRef<HTMLButtonElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const speechRequestRef = useRef(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speechError, setSpeechError] = useState<string | null>(null);
 
   const speakWord = useCallback(
     async (word: string): Promise<void> => {
+      const request = ++speechRequestRef.current;
       setIsSpeaking(true);
       setSpeechError(null);
       try {
         await ttsService.speak(word, { rate: speechRate, volume: speechVolume });
       } catch (error) {
-        console.error('TTS error:', error);
-        setSpeechError('Pronunciation is unavailable. Check audio settings and try again.');
+        if (request === speechRequestRef.current) {
+          console.error('TTS error:', error);
+          setSpeechError('Pronunciation is unavailable. Check audio settings and try again.');
+        }
       } finally {
-        setIsSpeaking(false);
+        if (request === speechRequestRef.current) {
+          setIsSpeaking(false);
+        }
       }
     },
     [speechRate, speechVolume]
@@ -116,7 +122,10 @@ export function usePracticeSessionController(): PracticeSessionController {
     if (currentWord) {
       void speakWord(currentWord.word);
     }
-    return () => ttsService.cancel();
+    return () => {
+      speechRequestRef.current += 1;
+      ttsService.cancel();
+    };
   }, [currentWord, speakWord]);
 
   useEffect(() => {

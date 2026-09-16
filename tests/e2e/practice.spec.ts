@@ -35,8 +35,10 @@ test.describe('Spelling Bee Practice', () => {
     await grade.click();
     await page.getByRole('option', { name: 'Grade 5' }).click();
     await expect(grade).toHaveText('Grade 5');
-    await expect(page.getByRole('button', { name: 'random' })).toBeVisible();
-    const adaptive = page.getByRole('button', { name: 'adaptive' });
+    await expect(page.getByRole('button', { name: /Random A balanced mix/i })).toBeVisible();
+    const adaptive = page.getByRole('button', {
+      name: /Adaptive Review Review words due now/i,
+    });
     await adaptive.click();
     await expect(adaptive).toHaveAttribute('aria-pressed', 'true');
     await expect(page.getByRole('combobox', { name: 'Filter by difficulty' })).toBeVisible();
